@@ -6,11 +6,19 @@ class CckForms::ParameterTypeClass::StringCollection
   end
 
   def mongoize
-    value.split "\r\n" if value.is_a? String
+    if value.is_a? String
+      value.split "\r\n"
+    elsif value.respond_to? :each
+      value.to_a
+    end
   end
 
   def self.demongoize_value(value, parameter_type_class=nil)
-    value = [value] if value.is_a? String
+    if value.is_a? String
+      value = [value]
+    elsif value.respond_to? :each
+      value = value.to_a
+    end
     super
   end
 
