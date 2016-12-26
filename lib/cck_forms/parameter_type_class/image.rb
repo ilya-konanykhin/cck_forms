@@ -1,5 +1,6 @@
 class CckForms::ParameterTypeClass::Image < CckForms::ParameterTypeClass::File
   include CckForms::ParameterTypeClass::Base
+  include CckForms::ImageValue
 
   def self.name
     'Картинка'
@@ -20,28 +21,20 @@ class CckForms::ParameterTypeClass::Image < CckForms::ParameterTypeClass::File
 
   def mongoize
     case value
-      when file_type
-        {
-            id: value.id,
-            width: value.width,
-            height: value.height
-        }
+      when file_type then converted_attributes(value)
       when ::Hash then value
       when ::String
         image = file_type.find(value)
-        {
-            id: image.id,
-            width: image.width,
-            height: image.height
-        }
+        converted_attributes(image)
     end
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end
   
   def self.demongoize_value(value, parameter_type_class=nil)
-    #::Neofiles::Image.find(value.try(:[], :id)) unless value.blank?
-    value
+    unless value.blank?
+      value.is_a?(Hash) ? value : file_type.find(value)
+    end
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end
