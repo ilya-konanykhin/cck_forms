@@ -1,5 +1,6 @@
 class CckForms::ParameterTypeClass::File
   include CckForms::ParameterTypeClass::Base
+  include CckForms::ImageValue
 
   def self.name
     'Файл'
@@ -13,17 +14,23 @@ class CckForms::ParameterTypeClass::File
     self.class.file_type
   end
 
-  # Если передан Neofiles::File, вернет его идентификатор, если строка - вернет ее, иначе - nil.
   def mongoize
     case value
-      when file_type then value.id
-      when ::String then value
+      when file_type then converted_attributes(value)
+      when ::Hash then value
+      when ::String
+        file = file_type.find(value)
+        converted_attributes(file)
     end
+  rescue Mongoid::Errors::DocumentNotFound
+    nil
   end
 
   # Попытаемся получить объект Neofiles::File по его идентификатору. Если не получилось, вернем nil.
   def self.demongoize_value(value, parameter_type_class=nil)
-    file_type.find(value) unless value.blank?
+    unless value.blank?
+      value.is_a?(Hash) ? value : file_type.find(value)
+    end
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end
