@@ -1,5 +1,6 @@
 class CckForms::ParameterTypeClass::Album
   include CckForms::ParameterTypeClass::Base
+  include CckForms::ImageValue
 
   def self.name
     'Альбом'
@@ -8,13 +9,22 @@ class CckForms::ParameterTypeClass::Album
   # Преобразует данные для Монго.
   # Приводит переданный массив или хэш объектов Neofiles::Image или их идентификаторов в массив.
   def mongoize
-    the_value = value.is_a?(Hash) ? value['value'] : value
-
+    the_value = value.is_a?(Hash) ? value["value"] : value
     result = []
     if the_value.respond_to? :each
       the_value.each do |image|
         image = image[1] if the_value.respond_to? :each_value
-        result.push(image.is_a?(::Neofiles::Image) ? image.id : image.to_s) if image.present?
+        next if image.blank?
+        image = if image.is_a?(::Neofiles::Image)
+                  converted_attributes(image)
+                elsif image.is_a?(String)
+                  file = ::Neofiles::Image.find(image)
+                  converted_attributes(file)
+                elsif image.is_a?(Hash)
+                  image
+                end
+        #result.push(image.is_a?(::Neofiles::Image) ? image.id : image.to_s) if image.present?
+        result.push(image) if image.present?
       end
     end
 

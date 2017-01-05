@@ -17,4 +17,5 @@ class CckForms::ParameterTypeClass::Image < CckForms::ParameterTypeClass::File
     view_context = options[:view_context]
     "<img style='width: 64px; height: 64px;' src='#{view_context.neofiles_image_path(id: value, format: '64x64', crop: 1)}'>".html_safe
   end
+
 end
