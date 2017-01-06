@@ -1,5 +1,6 @@
 class CckForms::ParameterTypeClass::File
   include CckForms::ParameterTypeClass::Base
+  include CckForms::NeofilesDenormalize
 
   def self.name
     'Файл'
@@ -13,19 +14,13 @@ class CckForms::ParameterTypeClass::File
     self.class.file_type
   end
 
-  # Если передан Neofiles::File, вернет его идентификатор, если строка - вернет ее, иначе - nil.
   def mongoize
-    case value
-      when file_type then value.id
-      when ::String then value
-    end
+    self.class.neofiles_attrs_or_id value, file_type
   end
 
   # Попытаемся получить объект Neofiles::File по его идентификатору. Если не получилось, вернем nil.
   def self.demongoize_value(value, parameter_type_class=nil)
-    file_type.find(value) unless value.blank?
-  rescue Mongoid::Errors::DocumentNotFound
-    nil
+    neofiles_mock_or_load value
   end
 
   # Строит форму выбора и загрузки 1 картинки.
@@ -50,10 +45,11 @@ class CckForms::ParameterTypeClass::File
 
     # создаем временное поле, чтобы пока аяксовый ответ не вернется, мы могли все же отправить родительскую форму
     # и не потерять при этом данные из поля
+    file_id = file.is_a?(file_type) ? file.id.to_s : file.to_s
     temp_field, remove_temp_field = '', ''
-    if file.present? && file.is_a?(String)
-      temp_id           = "temp_file_field_#{file}"
-      temp_field        = '<input id="' + temp_id + '" type="hidden" name="' + input_name + '" value="' + file + '">'
+    if file_id.present?
+      temp_id           = "temp_file_field_#{file_id}"
+      temp_field        = '<input id="' + temp_id + '" type="hidden" name="' + input_name + '" value="' + file_id + '">'
       remove_temp_field = '$("#' + temp_id + '").remove();'
     end
 
@@ -62,7 +58,7 @@ class CckForms::ParameterTypeClass::File
 
     <script type="text/javascript">
       $(function() {
-          $("#' + cont_id + '").load("' + helper.neofiles_file_compact_path(id: file, input_name: input_name, widget_id: widget_id, append_create: append_create ? '1' : nil, clean_remove: clean_remove ? '1' : nil, disabled: disabled ? '1' : nil, multiple: multiple ? '1' : nil, with_desc: with_desc ? '1' : nil) + '", null, function() {
+          $("#' + cont_id + '").load("' + helper.neofiles_file_compact_path(id: file_id, input_name: input_name, widget_id: widget_id, append_create: append_create ? '1' : nil, clean_remove: clean_remove ? '1' : nil, disabled: disabled ? '1' : nil, multiple: multiple ? '1' : nil, with_desc: with_desc ? '1' : nil) + '", null, function() {
               $(this).children().unwrap();
               ' + remove_temp_field + '
           });

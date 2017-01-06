@@ -1,5 +1,4 @@
 class CckForms::ParameterTypeClass::Image < CckForms::ParameterTypeClass::File
-  include CckForms::ParameterTypeClass::Base
 
   def self.name
     'Картинка'

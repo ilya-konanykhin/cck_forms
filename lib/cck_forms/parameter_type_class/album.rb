@@ -1,5 +1,6 @@
 class CckForms::ParameterTypeClass::Album
   include CckForms::ParameterTypeClass::Base
+  include CckForms::NeofilesDenormalize
 
   def self.name
     'Альбом'
@@ -14,18 +15,19 @@ class CckForms::ParameterTypeClass::Album
     if the_value.respond_to? :each
       the_value.each do |image|
         image = image[1] if the_value.respond_to? :each_value
-        result.push(image.is_a?(::Neofiles::Image) ? image.id : image.to_s) if image.present?
+        result.push self.class.neofiles_attrs_or_id(image, ::Neofiles::Image)
       end
     end
 
-    result
+    result.compact
   end
 
   # Преобразуем данные из Монго.
   # Приводим в массив (по идее, массив идентификаторов Neofiles::Image, хотя может быть что угодно).
   def self.demongoize_value(value, parameter_type_class=nil)
     if value.respond_to? :each
-      value
+      value = value.values if value.respond_to? :values
+      value.map { |x| neofiles_mock_or_load(x) }.compact
     else
       []
     end
@@ -49,6 +51,7 @@ class CckForms::ParameterTypeClass::Album
     file_forms = []
 
     the_value.each do |image_id|
+      image_id = image_id.is_a?(::Neofiles::File) ? image_id.id : image_id
       file_forms << CckForms::ParameterTypeClass::Image.create_load_form( helper: self,
                                                                           file: image_id,
                                                                           input_name: input_name_prefix,
