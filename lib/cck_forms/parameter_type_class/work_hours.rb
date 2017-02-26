@@ -1,3 +1,5 @@
+# Represents a set of weekly based work hours: essentially a set of SELECTs one for each week day.
+#
 class CckForms::ParameterTypeClass::WorkHours
   include CckForms::ParameterTypeClass::Base
 
@@ -13,11 +15,7 @@ class CckForms::ParameterTypeClass::WorkHours
     DAYS_RU_SHORT[DAYS.index(day.to_s)]
   end
 
-  # Входящий хэш или массив объектов WorkHoursDat
-  #
-  #   mon: {open_time: ..., open_24_hours: ...}, tue: {...}, ...
-  #
-  # преобразует в хэш для Монго.
+  # mon: {open_time: ..., open_24_hours: ...}, tue: {...}, ... -> MongoDB Hash
   def mongoize
     return {} unless value.is_a? Hash
 
@@ -27,7 +25,7 @@ class CckForms::ParameterTypeClass::WorkHours
     end
   end
 
-  # Конструирует хэш объектов WorkHoursDay (ключ - название дня вида :mon, см. DAYS).
+  # Makes a Hash of WorkHoursDay (key - day name of form :mon, see DAYS)
   def self.demongoize_value(value, parameter_type_class=nil)
     return {} unless value.is_a? Hash
     value.reduce({}) do |r, (day_name, day_row)|
@@ -37,7 +35,7 @@ class CckForms::ParameterTypeClass::WorkHours
     end
   end
 
-  # Строит форму для редактирования режима работы. 1 строка формы - 1 день со всеми своими параметрами.
+  # Builds HTML form. 1 row — 1 day
   def build_form(form_builder, options)
     set_value_in_hash options
 
@@ -70,7 +68,7 @@ class CckForms::ParameterTypeClass::WorkHours
     sprintf '<div class="work-hours" id="%1$s">%2$s</div><script type="text/javascript">$(function() {$("#%1$s").workhours()})</script>', form_builder_name_to_id(form_builder), result.join
   end
 
-  # Строит строку вида: "Пн—Ср 10:00—23:00; Чт—Сб круглосуточно"
+  # Makes a string: "Mon—Wed 10:00—23:00; Thu-Sat 24h"
   def to_html(options = nil)
     value = self.value
     return value.to_s unless value.respond_to? :each
@@ -79,7 +77,7 @@ class CckForms::ParameterTypeClass::WorkHours
 
     value = value.deep_stringify_keys if value.respond_to? :deep_stringify_keys
 
-    # разобьем на группы дней с одинаковым значением (режимом работы), типа {'круглосуточно' => %w{mon tue wed}, ...}
+    # split by groups with equal value: {'25h' => %w{mon tue wed}, ...}
     groups = {}
     value.send(value.respond_to?(:each_value) ? :each_value : :each) do |day|
       day = CckForms::ParameterTypeClass::WorkHours::WorkHoursDay.new(day) unless day.is_a? CckForms::ParameterTypeClass::WorkHours::WorkHoursDay
@@ -88,7 +86,7 @@ class CckForms::ParameterTypeClass::WorkHours
       groups[hash] << day.day
     end
 
-    # построим строки для групп
+    # make string for each group
     result = []
     groups.each_pair do |hours_description, days|
       if hours_description.present?
@@ -116,10 +114,10 @@ class CckForms::ParameterTypeClass::WorkHours
     to_html with_tags: false
   end
 
-  # Входной массив вида %w{mon, tue, wed, sat} преобразует в сгруппированную строку вида: "Пн—Ср, Сб".
+  # %w{mon, tue, wed, sat} -> "Mon—Wed, Sat"
   def self.grouped_days_string(days)
 
-    # разобьем на непрерывные группы типа [%w{mon tue wed}, %w{sat}]
+    # split by continuous blocks: [%w{mon tue wed}, %w{sat}]
     days.sort! { |a, b| DAYS.index(a) <=> DAYS.index(b) }
     prev_index = -2
     groups = []
@@ -133,7 +131,7 @@ class CckForms::ParameterTypeClass::WorkHours
       prev_index = index
     end
 
-    # получившиеся группы преобразуем в строки и сольем воедино
+    # convert to string and join
     groups.map do |group|
       if group.length == 1
         group[0]
@@ -147,16 +145,14 @@ class CckForms::ParameterTypeClass::WorkHours
 
 
 
-  # Модель-представление рабочего графика одного дня недели. При получении данных из Монги преобразовываем в эту модель,
-  # для удобства работы (чтобы не с хэшами возиться).
+  # A utility model for one work day.
   #
-  # day - строка из массива CckForms::ParameterTypeClass::WorkHours::DAYS.
-  # open_time и close_time хранятся в виде хэшей {hours: 10, minutes: 5}.
+  # day - one of CckForms::ParameterTypeClass::WorkHours::DAYS.
+  # open_time & close_time are hashes: {hours: 10, minutes: 5}
   class WorkHoursDay
 
     attr_accessor :day, :open_time, :close_time, :open_24_hours, :open_until_last_client
 
-    # Инициализирует свои поля из хэша.
     def initialize(other)
       if other.is_a? Hash
         other = other.symbolize_keys
@@ -174,7 +170,7 @@ class CckForms::ParameterTypeClass::WorkHours
       end
     end
 
-    # Равны ли два объекта. Да, если все их поля равны.
+    # Are equal if all fields are equal
     def ==(other)
       other = self.class.new(other) unless other.is_a? self.class
 
@@ -185,12 +181,12 @@ class CckForms::ParameterTypeClass::WorkHours
           self.open_until_last_client == other.open_until_last_client
     end
 
-    # Строит целочисленный хэш на основе всех полей, кроме day, чтобы группировать одинаковые режимы работы.
+    # Hash key for grouping (all fields except for day)
     def hash_without_day
       sprintf('%s:%s:%s:%s', open_time, close_time, open_24_hours, open_until_last_client).hash
     end
 
-    # Строит строковое описание режима работы в формате: "с 12:00 до последнего клиента"
+    # "from 12:00 till last client"
     def to_s_without_day
       result = ''
       if open_24_hours
@@ -214,7 +210,7 @@ class CckForms::ParameterTypeClass::WorkHours
       result
     end
 
-    # Строит форму редактирования одного дня.
+    # Single day form HTML
     def build_form(form_builder, template = false, options = {})
       form_builder.object = self
 
@@ -270,24 +266,24 @@ HTML
 
     private
 
-    # Преобразует значение из запроса (чексбокс) в булево, типа 1 -> true.
+    # HTML form to boolean: '1' -> true
     def form_to_boolean(value)
       return value == '1' if value.is_a? String
       !!value
     end
 
-    # Преобразует хэше времени {hours: ..., minutes: ...} в строку "10:42"
+    # {hours: ..., minutes: ...} -> "10:42"
     def time_to_s(time)
       return nil unless time.is_a?(Hash) and time['hours'].present? and time['minutes'].present?
       sprintf '%s:%s', time['hours'].to_s.rjust(2, '0'), time['minutes'].to_s.rjust(2, '0')
     end
 
-    # Не пустое ли значение времени?
+    # Time present?
     def time_present?(time)
       return time.is_a?(Hash) && time['hours'].present? && time['minutes'].present?
     end
 
-    # Строим форму с селектами времени вида: [18]:[45]
+    # SELECTs: [18]:[45]
     def build_time_form(form_builder, value)
       hours = []
       24.times { |hour| hours << [hour.to_s.rjust(2, '0'), hour] }
@@ -306,7 +302,6 @@ HTML
 
     public
 
-    # Преборазование самого себя для сохранения в Монго (хэш).
     def mongoize
       {
           'day' => day.to_s,
@@ -319,7 +314,6 @@ HTML
 
     class << self
 
-      # Преборазование самого себя из представления Монго (из хэша).
       def demongoize(object)
         object = object.symbolize_keys
         WorkHoursDay.new(
@@ -331,7 +325,6 @@ HTML
         )
       end
 
-      # "Статическое" преборазование самого себя для сохранения в Монго (хэш).
       def mongoize(object)
         case object
           when WorkHoursDay then object.mongoize
@@ -340,14 +333,12 @@ HTML
         end
       end
 
-      # TODO: сделать нормальный evolve
+      # TODO: make evolve
       def evolve(object)
         object
       end
 
-      # Преобразовываем значение времени для Монго. Берет Time или DateTime или хэш и выдает хэш вида:
-      #
-      #   {hours: 10, minutes: 5}
+      # Time/DateTime -> {hours: 10, minutes: 5}
       def mongoize_time(time)
         if time.is_a? Time or time.is_a? DateTime
           {'hours' => time.hour, 'minutes' => time.min}
@@ -357,9 +348,6 @@ HTML
         end
       end
 
-      # Преобразовываем значение времени для Монго. Берет Time или DateTime или хэш и выдает хэш вида:
-      #
-      #   {hours: 10, minutes: 5}
       def demongoize_time(time)
         mongoize_time(time)
       end
