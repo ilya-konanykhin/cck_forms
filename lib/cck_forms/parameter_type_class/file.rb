@@ -1,3 +1,5 @@
+# Represents a single file.
+#
 class CckForms::ParameterTypeClass::File
   include CckForms::ParameterTypeClass::Base
   include CckForms::NeofilesDenormalize
@@ -14,23 +16,23 @@ class CckForms::ParameterTypeClass::File
     self.class.file_type
   end
 
+  # Converts Neofiles::File or its ID into denormalized Hash to be stored in MongoDB
   def mongoize
     self.class.neofiles_attrs_or_id value, file_type
   end
 
-  # Попытаемся получить объект Neofiles::File по его идентификатору. Если не получилось, вернем nil.
+  # Converts denormalized attrs hash or ID to Neofiles::File instance (possibly lazy loadable)
   def self.demongoize_value(value, parameter_type_class=nil)
     neofiles_mock_or_load value
   end
 
-  # Строит форму выбора и загрузки 1 картинки.
+  # Constructs HTML form for image upload & manipulation. Basically, it is a DIV with some ID and a Javascript widget
+  # creation for that DIV.
   #
-  # Ставит ДИВ и делает аяксовый вызов метода file_compact контроллера Neofiles::AdminController.
+  # options:
   #
-  # Ключи options:
-  #
-  #   value          - текущее значение (идентификатор или объект Neofiles::File)
-  #
+  #   value     - current value (ID or Neofiles::File)
+  #   with_desc - if true, show the description edit richtext (default false)
   def build_form(form_builder, options)
     set_value_in_hash options
     self.class.create_load_form helper: self,
@@ -40,6 +42,13 @@ class CckForms::ParameterTypeClass::File
                                 with_desc: options[:with_desc]
   end
 
+  # Create image load DIV & script. A separate function to allow other (non-CCK) fields to utilize this functionality.
+  #
+  #   helper    - view context for HTML generation (`self` in views or `view_context` in controllers)
+  #   file      - Neofiles::File or ID
+  #   widget_id - DIV ID
+  #   input_name, append_create, clean_remove, disabled, multiple, with_desc
+  #             - Neofiles arguments, see Neofiles::AdminController
   def self.create_load_form(helper:, file:, input_name:, append_create: false, clean_remove: false, widget_id: nil, disabled: false, multiple: false, with_desc: false)
     cont_id   = 'container_' + (widget_id.presence || form_name_to_id(input_name))
 
@@ -66,11 +75,13 @@ class CckForms::ParameterTypeClass::File
     </script>'
   end
 
+  # Returns empty string
   def to_s
     ''
   end
 
+  # Returns a file name
   def to_diff_value(options = {})
-    "Файл: #{self.value.try! :name}"
+    value.try! :name
   end
 end
