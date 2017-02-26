@@ -10,8 +10,8 @@ module CckForms
     config.cck_forms = ActiveSupport::OrderedOptions.new
 
     # general
-    config.cck_forms.load_type_classes          = true
-    config.cck_forms.extend_form_builder        = true
+    config.cck_forms.load_type_classes          = true # if true, require all default type classes
+    config.cck_forms.extend_form_builder        = true # if true, extend FormBuilder via form_builder_extensions.rb
 
     # phones
     config.cck_forms.phones = ActiveSupport::OrderedOptions.new

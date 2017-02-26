@@ -1,13 +1,20 @@
+# Utility class to handle denormalization of Neofile::File object fields to be stored in a host object.
+#
+# This module is included in Album and Image parameter type classes.
+#
 module CckForms::NeofilesDenormalize
   extend ActiveSupport::Concern
 
+  # Fields that should not be stored in a host object since they are mutable
   NEOFILES_LAZY_ATTRS = %i{ no_wm description is_deleted }
 
   module ClassMethods
+    # Returns all fields of Neofiles::File obj to be denormalized
     def neofiles_attrs(obj)
       obj.attributes.except *NEOFILES_LAZY_ATTRS
     end
 
+    # Returns all fields of Neofiles::File to be denormalized or the object ID if the object itself can not be found
     def neofiles_attrs_or_id(obj_or_id, klass = ::Neofiles::File)
       if obj_or_id.present?
         obj, id = if obj_or_id.is_a? klass
@@ -20,12 +27,14 @@ module CckForms::NeofilesDenormalize
       end
     end
 
+    # Constructs a Mongoid::Document of class klass with attrs as if it was a usual document loaded from MongoDB
     def neofiles_mock(attrs, klass)
       Mongoid::Factory.from_db(klass, attrs).tap do |obj|
         neofiles_lazy_loadable obj
       end
     end
 
+    # If attrs_or_id is a Hash, constructs a mock from it. Otherwise, load an object by its ID
     def neofiles_mock_or_load(attrs_or_id, klass = ::Neofiles::File)
       if attrs_or_id.present?
         case attrs_or_id
@@ -36,6 +45,8 @@ module CckForms::NeofilesDenormalize
       end
     end
 
+    # Makes obj lazy load fields NEOFILES_LAZY_ATTRS. That is, when these fields are accessed vie getters or
+    # read_attribute, make a request to MongoDB to fetch fresh data (all at once)
     def neofiles_lazy_loadable(obj)
       def obj.__lazy_load
         return if @__lazy_loaded
