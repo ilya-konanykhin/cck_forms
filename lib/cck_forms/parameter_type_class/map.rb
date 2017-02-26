@@ -1,3 +1,5 @@
+# Represents a map point in Google Maps or Yandex.Maps.
+#
 class CckForms::ParameterTypeClass::Map
   include CckForms::ParameterTypeClass::Base
 
@@ -14,9 +16,9 @@ class CckForms::ParameterTypeClass::Map
     'Точка на карте'
   end
 
-  # Было базе: {latlon: [x, y], zoom: z}
+  # In MongoDB: {latlon: [x, y], zoom: z}
   #
-  # Стало в модели: {
+  # In application: {
   #   latitude: x,
   #   longitude: y,
   #   zoom: z
@@ -39,13 +41,13 @@ class CckForms::ParameterTypeClass::Map
   end
 
 
-  # Было в модели: {
+  # In application: {
   #   latitude: x,
   #   longitude: y,
   #   zoom: z
   # }
   #
-  # Стало в базе: {latlon: [x, y], zoom: z}
+  # In MongoDB: {latlon: [x, y], zoom: z}
   def mongoize
     value = self.value.is_a?(Hash) ? self.value : {}
     return {
@@ -55,7 +57,7 @@ class CckForms::ParameterTypeClass::Map
     }
   end
 
-  # Если переданы :width и :height, вызовет img_tag, иначе вернет пустую строку.
+  # Call #img_tag if :width & :height
   def to_s(options = {})
     options ||= {}
     if options[:width].to_i > 0 and options[:height].to_i > 0
@@ -66,8 +68,10 @@ class CckForms::ParameterTypeClass::Map
     ''
   end
 
-  # Возвращает тэг IMG с картинкой карты и точкой на ней, если value не пустое (содержит координаты точки).
-  # См. Google/Yandex Maps Static API.
+  # IMG tag of options[:with] X options[:height] size with a point on it in the current value position (unless value
+  # is empty, of course).
+  #
+  # See Google/Yandex Maps Static API.
   def img_tag(width, height, options = {})
     map_type = value['type']
 
@@ -105,7 +109,7 @@ class CckForms::ParameterTypeClass::Map
     end
   end
 
-  # Возвращает тэг A со ссылкой на карту с маркером объекта.
+  # <A> tag with a link to the Google/Yandex Maps with marker placed on the current value position
   def a_tag(content, attrs)
     if attrs[:href] = url
       attrs_strings = []
@@ -116,7 +120,7 @@ class CckForms::ParameterTypeClass::Map
     end
   end
 
-  # Возвращает урл на карту.
+  # Returns a URL to Google/Yandex Maps map with marker placed on the current value position
   def url
     if value['latitude'].present? and value['longitude'].present?
       if value['type'] == MAP_TYPE_GOOGLE
@@ -137,25 +141,20 @@ class CckForms::ParameterTypeClass::Map
     end
   end
 
-  # Построим форму для карты. Представляет собой 3 спрятанных поля latitude, longitude, zoom. Затем рядом ставится ДИВ,
-  # на который вешается карта Гугла, и с помощью скриптов изменение полей привязывается к кликам на карте и изменению
-  # масштаба.
+  # 3 hidden field: latitude, longitude, zoom. Next we place a DIV nearby on which Google/Yandex Map is hooked.
   #
-  # 1 клик на пустом месте ставит точку (пишем в поля), старая точка при этом удаляется. Клик на точке удаляет ее
-  # (очищаем поля).
+  # 1 click on a map places a point (writing to hidden fields). 1 click on a point removes it (emptying fields).
   #
-  # Также, слушает событие change поля "город" (facility_page_cck_params_city_value), чтобы по известным названиям
-  # городов отцентровать карту на выбранном городе.
+  # TODO: remove listeners of "city" events, it's out of scope for this gem
   #
   # options:
   #
-  #   value     - тек. значение, см. self.demongoize_value
-  #   width     - ширина карты
-  #   height    - высота карты
-  #   latitude  - широта центра карты, если ничего не выбрано
-  #   longitude - долгота центра карты, если ничего не выбрано
-  #   zoom      - масштаб карты, если ничего не выбрано
-
+  #   value     - current point
+  #   width     - map width
+  #   height    - map height
+  #   latitude  - default map center lat
+  #   longitude - default map center lon
+  #   zoom      - default map center zoom
   def build_form(form_builder, options)
     set_value_in_hash options
 
@@ -252,6 +251,7 @@ class CckForms::ParameterTypeClass::Map
     |
   end
 
+  # Returns a 64x64 IMG with a marker (see #img_tag)
   def to_diff_value(options = {})
     demongoize_value!
     img_tag(64, 64, marker_size: :small)
