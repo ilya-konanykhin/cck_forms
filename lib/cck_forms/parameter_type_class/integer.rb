@@ -1,3 +1,5 @@
+# Represents a decimal value.
+#
 class CckForms::ParameterTypeClass::Integer
   include CckForms::ParameterTypeClass::Base
 
@@ -39,11 +41,15 @@ class CckForms::ParameterTypeClass::Integer
     end
   end
 
-  # Примеры options[:values] (работает, если передано options[:as] == :select и options[:for] == :search):
+  # Examples of options[:values] (works only if options[:as] == :select or options[:for] == :search):
   #
-  #   диапазоны:      [['не больше 10', '/10'], ['11-20', '11/20'], ['21-30', '21/30'], ['свыше 30', '31/']]
-  #   перечисление:   [['один', '1'], ['два', '2'], ['три', '3']]
-  #   комбинирование: [['один', '1'], ['два', '2'], ['три и больше', '3/']]
+  #   ranges:   [['not more that 10', '/10'], ['11-20', '11/20'], ['21-30', '21/30'], ['more that 30', '31/']]
+  #   counting: [['one', '1'], ['two', '2'], ['three', '3']]
+  #   combined: [['one', '1'], ['two', '2'], ['three and more', '3/']]
+  #
+  # Other options:
+  #
+  #   only    - leave only these keys (array/string)
   def build_form(form_builder, options = {})
     set_value_in_hash options
 
