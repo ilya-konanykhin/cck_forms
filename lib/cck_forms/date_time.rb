@@ -1,7 +1,11 @@
+# Utility module grouping all date & time related methods
+#
 module CckForms::DateTime
   extend ActiveSupport::Concern
 
   module DateTimeParser
+    # Create Date/DateTime object from its MongoDB/HTML representation: either a hash with keys :year, :month and so on
+    # or a Hash with keys (5i), (1i) etc.
     def date_object_from_what_stored_in_database(value)
       parsed_value = nil
       if value.is_a? Hash

@@ -1,3 +1,5 @@
+# Represents a enum (SELECT).
+#
 class CckForms::ParameterTypeClass::Enum
   include CckForms::ParameterTypeClass::Base
 
@@ -9,11 +11,14 @@ class CckForms::ParameterTypeClass::Enum
     value.presence
   end
 
+  # Current string value from valid_values
   def to_s(options = nil)
     return '' if value.blank?
     valid_values[value].to_s
   end
 
+  # Constructs MongoDB query. If query is a Hash, find all objects where field is any of the hash keys, for which value
+  # is '1'. Otherwise treat query as where(filed => query).
   def search(selectable, field, query)
     if query.is_a? Hash
       query = query.map { |k, v| v == '1' ? k : nil }.compact
@@ -27,6 +32,12 @@ class CckForms::ParameterTypeClass::Enum
     end
   end
 
+  # options:
+  #
+  #   as        - if 'checkboxes', display a set of checkboxes, not SELECT
+  #   only      - leave only these keys (array/string)
+  #   except    - reverse of :only
+  #   required  - HTML required attr
   def build_form(form_builder, options)
 
     if options.is_a? Hash and options[:as] == 'checkboxes'

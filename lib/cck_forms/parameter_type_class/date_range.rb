@@ -1,3 +1,5 @@
+# Represents a pair of date SELECTs (date range).
+#
 class CckForms::ParameterTypeClass::DateRange
   include CckForms::ParameterTypeClass::Base
 
@@ -5,6 +7,7 @@ class CckForms::ParameterTypeClass::DateRange
     'Диапазон между двумя датами'
   end
 
+  # Converts input hash of type {from: ..., till: ...} to MongoDB format
   def mongoize
     value_from_form = value
     return nil if value_from_form.blank?
@@ -21,6 +24,7 @@ class CckForms::ParameterTypeClass::DateRange
     db_representation
   end
 
+  # 2 date SELECTs
   def build_form(form_builder, options)
     result = []
     set_value_in_hash options
@@ -32,6 +36,9 @@ class CckForms::ParameterTypeClass::DateRange
     result.join.html_safe
   end
 
+  # "from 21.12.2012"
+  # "till 22.12.2012"
+  # "21.12.2012 - 22.12.2012"
   def to_s
     return '' unless value.present? && value.is_a?(Hash)
     types = {}
@@ -49,5 +56,4 @@ class CckForms::ParameterTypeClass::DateRange
     end
 
   end
-
 end

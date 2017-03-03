@@ -1,12 +1,14 @@
+# Represents an ordered collection of photos (Image types).
+#
 class CckForms::ParameterTypeClass::Album
   include CckForms::ParameterTypeClass::Base
+  include CckForms::NeofilesDenormalize
 
   def self.name
     'Альбом'
   end
 
-  # Преобразует данные для Монго.
-  # Приводит переданный массив или хэш объектов Neofiles::Image или их идентификаторов в массив.
+  # Converts input array of Neofiles::Image or IDs to array of hashes (denormalized image data) or IDs
   def mongoize
     the_value = value.is_a?(Hash) ? value['value'] : value
 
@@ -14,28 +16,27 @@ class CckForms::ParameterTypeClass::Album
     if the_value.respond_to? :each
       the_value.each do |image|
         image = image[1] if the_value.respond_to? :each_value
-        result.push(image.is_a?(::Neofiles::Image) ? image.id : image.to_s) if image.present?
+        result.push self.class.neofiles_attrs_or_id(image, ::Neofiles::Image)
       end
     end
 
-    result
+    result.compact
   end
 
-  # Преобразуем данные из Монго.
-  # Приводим в массив (по идее, массив идентификаторов Neofiles::Image, хотя может быть что угодно).
+  # Converts input array of attr hashes or IDs to array if Neofiles::Image (possibly lazy loadable)
   def self.demongoize_value(value, parameter_type_class=nil)
     if value.respond_to? :each
-      value
+      value = value.values if value.respond_to? :values
+      value.map { |x| neofiles_mock_or_load(x) }.compact
     else
       []
     end
   end
 
-  # Строит форму для обновления файлов альбома.
+  # options:
   #
-  # Ключи options:
-  #
-  #   value - текущее значение (идентификатор или объект Neofiles::Album)
+  #   value     - current value (ID or Neofiles::Album)
+  #   with_desc - if true, show the description edit richtext (default false)
   def build_form(form_builder, options)
     set_value_in_hash options
 
@@ -49,6 +50,7 @@ class CckForms::ParameterTypeClass::Album
     file_forms = []
 
     the_value.each do |image_id|
+      image_id = image_id.is_a?(::Neofiles::File) ? image_id.id : image_id
       file_forms << CckForms::ParameterTypeClass::Image.create_load_form( helper: self,
                                                                           file: image_id,
                                                                           input_name: input_name_prefix,
@@ -84,10 +86,12 @@ class CckForms::ParameterTypeClass::Album
 HTML
   end
 
+  # Returns empty string
   def to_s(options = nil)
     ''
   end
 
+  # Returns a collection of 64x64 IMGs
   def to_diff_value(options = {})
     view_context = options[:view_context]
     images_html_list = []

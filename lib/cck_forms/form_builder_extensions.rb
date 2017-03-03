@@ -1,4 +1,4 @@
-# Примесь для расширения ActionView::Helpers::FormBuilder, чтобы работать с нашими полями:
+# Extends ActionView::Helpers::FormBuilder to add CCK Forms related methods:
 #
 #   class CckEnabled
 #     field :logo, type: CckForms::ParameterTypeClass::Image
@@ -9,6 +9,7 @@
 #
 module CckForms::FormBuilderExtensions
   ActionView::Helpers::FormBuilder.class_eval do
+    # Returns HTML for a standalone CCK field field_name
     def standalone_cck_field(field_name, options = {})
       fields_for(field_name) do |ff|
         @template.raw object.send(field_name).build_form ff, options

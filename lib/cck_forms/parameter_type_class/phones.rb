@@ -1,3 +1,5 @@
+# Represents a set of phone numbers.
+#
 class CckForms::ParameterTypeClass::Phones
   include CckForms::ParameterTypeClass::Base
 
@@ -10,12 +12,12 @@ class CckForms::ParameterTypeClass::Phones
     'Телефоны'
   end
 
-  # Проверяет входной массив на наличие телефонов (хэша с ключами prefix, code и number).
-  # На выходе выдает очищенный массив хэшей с такими ключами, пропуская пустые телефоны.
+  # Filters input array for phone-like Hashes: prefix: ..., code: ..., number: ...
+  # Cleans them up and returns.
   #
-  # Было в модели: [{prefix: '+7'}, {code: ' 123 ', number: '1234567', zzz: ''}]
+  # In application: [{prefix: '+7'}, {code: ' 123 ', number: '1234567', zzz: ''}]
   #
-  # Стало в базе: [{prefix: '', code: '123', number: '1234567'}]
+  # In MongoDB: [{prefix: '', code: '123', number: '1234567'}]
   def mongoize
     value = self.value
     return [] unless value.respond_to? :each
@@ -43,7 +45,7 @@ class CckForms::ParameterTypeClass::Phones
     result
   end
 
-  # Просто приводит телефоны в базе в соответствие формату.
+  # Cleanup phone format
   def self.demongoize_value(value, parameter_type_class=nil)
     if value
       value.map do |phone|
@@ -57,12 +59,9 @@ class CckForms::ParameterTypeClass::Phones
     end
   end
 
-  # Строит форму для заполнения телефонов. В ней будет минимум MIN_PHONES_IN_FORM телефонов, если их меньше, остальные
-  # будут добавлены пустые.
+  # A form with pre-set MIN_PHONES_IN_FORM empty phones.
   #
-  # Также, если заполнены все MIN_PHONES_IN_FORM, добавит 1 пустое поле, чтобы можно было добавить новый телефон.
-  #
-  # Возвращает ХТМЛ.
+  # If MIN_PHONES_IN_FORM are taken, add one more field to add more phones.
   def build_form(form_builder, options)
     set_value_in_hash options
     value = options[:value].presence
@@ -76,7 +75,7 @@ class CckForms::ParameterTypeClass::Phones
     sprintf '<div id="%s">%s</div>%s', id, result.join, script(id)
   end
 
-  # Строит форму для 1 телефона из значения вида {prefix: '', code: '', number: ''}
+  # HTML for sinle phone number
   def build_single_form(form_builder, phone)
     phone = {} unless phone.is_a? Hash
     phone = blank_phone.merge phone
@@ -92,7 +91,7 @@ class CckForms::ParameterTypeClass::Phones
     sprintf '<p class="form-inline">%s &mdash; %s &mdash; %s</p>', phone_form[0], phone_form[1], phone_form[2]
   end
 
-  # Возвращает 1 пустой телефон (хэш вида {prefix: '+7', code: '', number: ''}). Так сказать, эталон.
+  # 1 empty phone Hash: {prefix: '+7', code: '', number: ''}
   def blank_phone
     {
         'prefix' => PREFIX,
@@ -176,12 +175,12 @@ HTML
     number.gsub /\D/, ''
   end
 
-  # 1234567 -> 123 45 67 с тэгами
+  # 1234567 -> 123 45 67 with tags
   def split_number(number)
     if number.length > 4
       tokens = []
 
-      # перевернем строку и разобъем на пары
+      # reverse & split by doubles
       number.reverse.scan(/.(?:.|$)/) do |token|
         token.reverse!
         if token.length == 1
@@ -191,7 +190,7 @@ HTML
         end
       end
 
-      # сольем все обратно
+      # merge back
       tokens.reverse!
       tokens.tap do |tokens|
         tokens.map! { |token| yield token } if block_given?

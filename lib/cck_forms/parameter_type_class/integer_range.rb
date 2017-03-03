@@ -1,3 +1,9 @@
+# Represents a decimal range — two integer values.
+#
+# Has an extra_options (see base.rb): :ranges
+# If passed, on each object save the intersection of the target range and :ranges will be calculated and saved into DB
+# (denormalized) for easy finding later via where('some_field.ranged.300-600' => true).
+#
 class CckForms::ParameterTypeClass::IntegerRange # Rover :)
   include CckForms::ParameterTypeClass::Base
 
@@ -49,6 +55,13 @@ class CckForms::ParameterTypeClass::IntegerRange # Rover :)
     db_representation
   end
 
+  # "from 10"
+  # "till 20"
+  # "10-20"
+  #
+  # options:
+  #
+  #   delimeter - instead of "-"
   def to_s(options = {})
     options ||= {}
     return '' if value.blank?
@@ -71,6 +84,10 @@ class CckForms::ParameterTypeClass::IntegerRange # Rover :)
     end
   end
 
+  # If options[:for] == :search and options[:as] == :select, builds a SELECT with options from extra_options[:rages].
+  # Otherwise, two inputs are built.
+  #
+  # options[:only/:except] are available if the former case.
   def build_form(form_builder, options)
     set_value_in_hash options
     if options.delete(:for) == :search
@@ -80,6 +97,7 @@ class CckForms::ParameterTypeClass::IntegerRange # Rover :)
     end
   end
 
+  # Search with the help of extra_options[:ranges]
   def search(criteria, field, query)
     criteria.where("#{field}.ranges.#{query}" => true)
   end

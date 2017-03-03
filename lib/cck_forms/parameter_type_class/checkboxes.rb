@@ -1,3 +1,5 @@
+# Represents a series of checkboxes. The values are take from valid_values, see base.rb
+#
 class CckForms::ParameterTypeClass::Checkboxes
   include CckForms::ParameterTypeClass::Base
 
@@ -25,7 +27,7 @@ class CckForms::ParameterTypeClass::Checkboxes
   end
 
   # ['kazakh', 'english'] -> {'kazakh' => 1, 'russain' => 0, 'english' => 1}
-  # (такой формат нужен формам)
+  # (for for builders)
   def self.demongoize_value(value, parameter_type_class=nil)
     value.present? or return {}
 
@@ -36,13 +38,14 @@ class CckForms::ParameterTypeClass::Checkboxes
     end
   end
 
-  # Перечислим все отмеченные элементы в строку.
-  # options[:block]  - задает шаблон sprintf для каждого вхождения
-  # options[:only]   - массив, оставить только эти ключи (можно передать одно, без массива)
-  # options[:except] - :only наоборот
-  # options[:glue]   - используем его вместо ', ' для склейки значений
-  # options[:short]  - по-возможности сокращать: если указаны все варианты, то вернется строка вида "выбрано все"
-  #                  - или "все, кроме xxx", если не выбран только xxx
+  # Comma-separated list of checked entries. Options:
+  #
+  #   block   - sprintf template for each entry
+  #   only    - leave only these keys (array/string)
+  #   except  - reverse of :only
+  #   glue    - use instead of ', ' for .join
+  #   short   - make the string shorter, if possible: if all variants are checked, returns string "all selected"
+  #             if few are not checked, returns "all except xxx, yyy, ..."
   def to_s(options = nil)
     checked_keys, checked_elements = [], []
     return '' if value.blank?
@@ -92,6 +95,10 @@ class CckForms::ParameterTypeClass::Checkboxes
     checked_elements.join glue
   end
 
+  # Construct Mongoid query from our internal. If query is a Hash, find all objects where field has ALL of the Hash keys.
+  # Key 'all' selected all objects.
+  #
+  # Otherwise, use usual where(field => query).
   def search(selectable, field, query)
     if query.respond_to? :each_pair
       keys = []
@@ -112,11 +119,11 @@ class CckForms::ParameterTypeClass::Checkboxes
     selectable
   end
 
-  # Составим строку для map-reduce, чтобы emit вызывался на каждом отмеченном значении, например, в документе хранится:
+  # Construct emit func for map/reduce to emit on each array value in MongoDB. For example, for object:
   #
   #   cck_params.city: ['almaty', 'astana']
   #
-  # Мы вызовем emit('almaty', 1); emit('astana', 1).
+  # we will emit('almaty', 1); emit('astana', 1).
   def self.emit_map_reduce(field_name)
     field_name = 'this.' + field_name
     return "if(#{field_name} && #{field_name} instanceof Array) {
@@ -126,11 +133,15 @@ class CckForms::ParameterTypeClass::Checkboxes
     }"
   end
 
-  # options[:block] - задает шаблон sprintf для каждого чекбокса (input, label)
-  # options[:map]   - задает преобразование (ключ-значение) текстов в подписях, например, 'длинный текст' => 'кор. ткст'
-  # options[:data]  - задает data-атрибуты для тэга label, по ключу из valid_values (capital: {almaty: 'yes', astana: 'no'})
-  # options[:as]    - если :select, то показать не в виде чекбоксов, а в виде выпадайки
-  # options[:only]  - только этот ключ (ключи)
+  # options:
+  #
+  #   block   - sprintf template for each entry (input, label)
+  #   map     - convert entry labels, e.g. 'long label text' => 'sh.txt'
+  #   data    - data-attrs for label, Hash (e.g. capital: {almaty: 'yes', astana: 'no'})
+  #   as      - if :select, construct a SELECT, not a checkboxes list
+  #   only    - see #to_s
+  #   except  - see #to_s
+  #   for     - if :search, do not add false-value checkbox
   def build_form(form_builder, options)
     return '' unless valid_values.is_a?(Hash) || valid_values.is_a?(Array)
 
@@ -176,6 +187,11 @@ class CckForms::ParameterTypeClass::Checkboxes
 
   private
 
+  # options:
+  #
+  #   only      - see #to_s
+  #   except    - see #to_s
+  #   required  - HTML required attr
   def build_select_form(form_builder, options)
     set_value_in_hash options
 

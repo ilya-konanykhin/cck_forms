@@ -1,3 +1,5 @@
+# Represents a single date & time.
+#
 class CckForms::ParameterTypeClass::DateTime
   include CckForms::ParameterTypeClass::Base
   include CckForms::DateTime
@@ -6,6 +8,7 @@ class CckForms::ParameterTypeClass::DateTime
     'Дата и время'
   end
 
+  # Date and time SELECTs
   def build_form(form_builder, options)
     set_value_in_hash options
     value = CckForms::ParameterTypeClass::Time::date_object_from_what_stored_in_database(options[:value])
@@ -15,19 +18,18 @@ class CckForms::ParameterTypeClass::DateTime
     ('<div class="form-inline">%s</div>' % form_builder.fields_for(:value) { |datetime_builder| datetime_builder.datetime_select '', form_element_options, form_element_html})
   end
 
-  # Формирует строковое представление даты и времени. Если options :символ, это эквивалентно options[:символ] = true,
-  # например:
+  # Options is a :symbol -> options[:symbol] = true:
   #
   #   date_attr.to_s :only_date
-  #   date_attr.to_s :only_date => true # эквивалентно
+  #   date_attr.to_s :only_date => true # equivalent
   #
-  # Ключи options:
+  # options:
   #
-  #   year_obligatory - вывести год, по-умолчанию, он не показывается, если равен текущему
-  #   only_date       - только дату, без времени
-  #   rus_date        - дату по-русски, типа "2 июля"
+  #   year_obligatory - force year in output (by default current year is skipped)
+  #   only_date       - hide time
+  #   rus_date        - Russian date, like "2 июля"
   #
-  # По-умолчанию, вернет строку вида "01.02.2012, 12:49". Если что-то сломалось, вернет пустую строку.
+  # By default: "01.02.2012, 12:49".
   def to_s(options=nil)
     value = if self.value.is_a? Time
               {
