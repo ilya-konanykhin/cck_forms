@@ -62,12 +62,25 @@ class CckForms::ParameterTypeClass::File
       remove_temp_field = '$("#' + temp_id + '").remove();'
     end
 
+    file_attributes = {
+        id: file_id,
+        input_name: input_name,
+        widget_id: widget_id,
+        append_create: append_create ? '1' : nil,
+        clean_remove: clean_remove ? '1' : nil,
+        disabled: disabled ? '1' : nil,
+        multiple: multiple ? '1' : nil,
+        with_desc: with_desc ? '1' : nil
+    }
+
+    file_attributes.merge!(additional_file_attributes) if defined? additional_file_attributes
+
     '<div id="' + cont_id + '"></div>
     ' + temp_field + '
 
     <script type="text/javascript">
       $(function() {
-          $("#' + cont_id + '").load("' + helper.neofiles_file_compact_path(id: file_id, input_name: input_name, widget_id: widget_id, append_create: append_create ? '1' : nil, clean_remove: clean_remove ? '1' : nil, disabled: disabled ? '1' : nil, multiple: multiple ? '1' : nil, with_desc: with_desc ? '1' : nil) + '", null, function() {
+          $("#' + cont_id + '").load("' + helper.neofiles_file_compact_path(file_attributes) + '", null, function() {
               $(this).children().unwrap();
               ' + remove_temp_field + '
           });
