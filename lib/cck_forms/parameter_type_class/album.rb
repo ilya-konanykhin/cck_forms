@@ -51,7 +51,7 @@ class CckForms::ParameterTypeClass::Album
 
     the_value.each do |image_id|
       image_id = image_id.is_a?(::Neofiles::File) ? image_id.id : image_id
-      file_forms << CckForms::ParameterTypeClass::Image.create_load_form( helper: self,
+      file_forms << cck_image_type.create_load_form( helper: self,
                                                                           file: image_id,
                                                                           input_name: input_name_prefix,
                                                                           append_create: false,
@@ -61,7 +61,7 @@ class CckForms::ParameterTypeClass::Album
                                                                           with_desc: options[:with_desc])
     end
 
-    add_file_form = CckForms::ParameterTypeClass::Image.create_load_form( helper: self,
+    add_file_form = cck_image_type.create_load_form( helper: self,
                                                                           file: nil,
                                                                           input_name: input_name_prefix,
                                                                           append_create: true,
@@ -85,6 +85,11 @@ class CckForms::ParameterTypeClass::Album
       </script>
 HTML
   end
+
+  def cck_image_type
+    CckForms::ParameterTypeClass::Image
+  end
+
 
   # Returns empty string
   def to_s(options = nil)
