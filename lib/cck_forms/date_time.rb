@@ -49,7 +49,7 @@ module CckForms::DateTime
       [{default: date_in_time_zone, include_blank: false, with_css_classes: true}, {class: 'form-control'}]
     end
 
-    def demongoize_value(value, parameter_type_class=nil)
+    def demongoize_value(value, _parameter_type_class=nil)
       date_object_from_what_stored_in_database value
     end
   end

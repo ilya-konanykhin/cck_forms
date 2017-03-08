@@ -54,10 +54,10 @@ class CckFormsMap.AbstractMap
 
         @.setMarkerToPoint latlon
         @.setCenter latlon
-        @.setZoom 17 # подобран экспериментально
+        @.setZoom 17 # adjusted by experiment for better view
 
     xhr.fail ->
-      alert "Произошла ошибка на сервере"
+      alert "Server error encountered"
 
 
   refresh: ->
@@ -209,7 +209,7 @@ class CckFormsMap.GoogleMap extends CckFormsMap.AbstractMap
     @.refresh()
 
   refresh: ->
-    center = @internalMapAPI.getCenter() # для того, чтобы центр карты не занимался ерундой
+    center = @internalMapAPI.getCenter() # keep the map center rock solid
     google.maps.event.trigger(@internalMapAPI, "resize")
     @internalMapAPI.setCenter(center)
 
