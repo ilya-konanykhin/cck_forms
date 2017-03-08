@@ -70,9 +70,9 @@ class CckForms::ParameterTypeClass::IntegerRange # Rover :)
     return '' if from.zero? && till.zero?
 
     if from.zero?
-      "до #{till}"
+      [I18n.t('cck_forms.integer_range.till'), till].join(' ')
     elsif till.zero?
-      "от #{from}"
+      [I18n.t('cck_forms.integer_range.from'), from].join(' ')
     elsif from == till
       from.to_s
     else
@@ -141,16 +141,16 @@ class CckForms::ParameterTypeClass::IntegerRange # Rover :)
   end
 
   def default_integer_range_delimiter
-    "–"
+    '–'
   end
 
   def humanized_integer_ranges_for_select
     @extra_options[:ranges].map do |range_string|
       low, high = range_string.split(range_string_delimiter)
       if low.to_i.to_s != low.to_s
-        option_text = "до #{high}"
+        option_text = [I18n.t('cck_forms.integer_range.less_than'), high].join(' ')
       elsif high.to_i.to_s != high.to_s
-        option_text = "свыше #{low}"
+        option_text = [I18n.t('cck_forms.integer_range.more_than'), low].join(' ')
       else
         option_text = [low, high].join(default_integer_range_delimiter)
       end

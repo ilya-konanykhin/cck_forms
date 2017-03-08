@@ -15,7 +15,7 @@ class CckForms::ParameterTypeClass::Time
   end
 
   # "19:34"
-  def to_s(options = nil)
+  def to_s(_options = nil)
     if value.is_a? Time
       the_value = {
           '(4i)' => value.hour,

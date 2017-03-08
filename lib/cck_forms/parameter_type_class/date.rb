@@ -20,7 +20,7 @@ class CckForms::ParameterTypeClass::Date
   end
 
   # "12.12.2012"
-  def to_s(options = nil)
+  def to_s(_options = nil)
     if value.is_a? Time
       the_value = {
           '(1i)' => value.year,

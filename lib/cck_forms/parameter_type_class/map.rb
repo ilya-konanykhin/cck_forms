@@ -19,7 +19,7 @@ class CckForms::ParameterTypeClass::Map
   #   longitude: y,
   #   zoom: z
   # }
-  def self.demongoize_value(value, parameter_type_class=nil)
+  def self.demongoize_value(value, _parameter_type_class=nil)
     value = value.to_h
     value.stringify_keys!
     latlon = value['latlon'] || []
@@ -190,7 +190,7 @@ class CckForms::ParameterTypeClass::Map
     cities_js = Hash[cities_js].to_json
 
     allowed_maps = @@map_providers
-    map_names = {'google' => 'Google', 'yandex' => 'Яндекс'}
+    map_names = {'google' => 'Google', 'yandex' => 'Yandex'}
     selected_map_type = value['type'].in?(allowed_maps) ? value['type'] : allowed_maps.first
 
     switchers = []
@@ -248,7 +248,7 @@ class CckForms::ParameterTypeClass::Map
   end
 
   # Returns a 64x64 IMG with a marker (see #img_tag)
-  def to_diff_value(options = {})
+  def to_diff_value(_options = {})
     demongoize_value!
     img_tag(64, 64, marker_size: :small)
   end

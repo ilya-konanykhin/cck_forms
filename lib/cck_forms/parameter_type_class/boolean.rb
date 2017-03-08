@@ -14,8 +14,8 @@ class CckForms::ParameterTypeClass::Boolean
   end
 
   # 'yes/no' string
-  def to_s(options = nil)
-    value? ? 'да' : 'нет'
+  def to_s(_options = nil)
+    value? ? I18n.t('cck_forms.boolean.yes') : I18n.t('cck_forms.boolean.no')
   end
 
   # Checkbox HTML

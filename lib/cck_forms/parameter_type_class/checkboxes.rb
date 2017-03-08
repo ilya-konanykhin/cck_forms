@@ -82,9 +82,9 @@ class CckForms::ParameterTypeClass::Checkboxes
       param_title = cck_parameter ? " «#{cck_parameter.title}»" : ''
 
       if unchecked_num == 0
-        return "Все значения#{param_title}"
+        return I18n.t('cck_forms.checkboxes.all_values', param_title: param_title)
       elsif unchecked_num < checked_keys.count./(2).round
-        return "Все значения#{param_title}, кроме " + valid_values.values_at(*unchecked_keys).map { |x| sprintf(template, x) }.join(glue)
+        return I18n.t('cck_forms.checkboxes.all_values_except', param_title: param_title) + ' ' + valid_values.values_at(*unchecked_keys).map { |x| sprintf(template, x) }.join(glue)
       end
     end
 
@@ -169,7 +169,7 @@ class CckForms::ParameterTypeClass::Checkboxes
 
           v = options[:map][v] || v
 
-          # required не встраиваю, иначе пока я все чекбоксы не отмечу, не могу отправить форму
+          # skip `required` since form will not be submitted unless a user checks all the checkboxes
           data = options[:data] ? extract_data_for_key(k, options[:data]) : nil
           sprintf(options[:block], ff.check_box(k.to_sym, {checked: checked}, '1', options[:for] == :search ? nil : '0'), ff.label(k.to_sym, v, data: data)).html_safe
         end

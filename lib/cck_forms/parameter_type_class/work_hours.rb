@@ -4,11 +4,10 @@ class CckForms::ParameterTypeClass::WorkHours
   include CckForms::ParameterTypeClass::Base
 
   DAYS = %w{ mon tue wed thu fri sat sun }
-  DAYS_RU_SHORT = %w{ Пн Вт Ср Чт Пт Сб Вс }
 
-  # mon -> Пн
-  def self.day_en_to_ru_short(day)
-    DAYS_RU_SHORT[DAYS.index(day.to_s)]
+  # mon -> Mon
+  def self.day_to_short(day)
+    I18n.t "cck_forms.work_hours.day_short.#{day}"
   end
 
   # mon: {open_time: ..., open_24_hours: ...}, tue: {...}, ... -> MongoDB Hash
@@ -87,13 +86,13 @@ class CckForms::ParameterTypeClass::WorkHours
     groups.each_pair do |hours_description, days|
       if hours_description.present?
         if days.length == 7
-          template = with_tags ? '<span class="workhours-group">%s, <span class="workhours-group-novac">без выходных</span></span>' : '%s, без выходных'
+          template = with_tags ? %Q{<span class="workhours-group">%s, <span class="workhours-group-novac">#{I18n.t 'cck_forms.work_hours.no_vacations'}</span></span>} : "%s, #{I18n.t 'cck_forms.work_hours.no_vacations'}"
           result << sprintf(template, hours_description)
         else
           if days == %w{ mon tue wed thu fri }
-            days_description = 'будние'
+            days_description = I18n.t 'cck_forms.work_hours.work_days'
           elsif days == %w{ sat sun }
-            days_description = 'сб, вс'
+            days_description = I18n.t 'cck_forms.work_hours.sat_sun'
           else
             days_description = CckForms::ParameterTypeClass::WorkHours.grouped_days_string(days).mb_chars.downcase
           end
@@ -106,7 +105,7 @@ class CckForms::ParameterTypeClass::WorkHours
     result.join('; ').html_safe
   end
 
-  def to_s(options = nil)
+  def to_s(_options = nil)
     to_html with_tags: false
   end
 
@@ -123,7 +122,7 @@ class CckForms::ParameterTypeClass::WorkHours
         groups << []
       end
 
-      groups.last << day_en_to_ru_short(day)
+      groups.last << day_to_short(day)
       prev_index = index
     end
 
@@ -186,21 +185,21 @@ class CckForms::ParameterTypeClass::WorkHours
     def to_s_without_day
       result = ''
       if open_24_hours
-        return 'круглосуточно'
+        return I18n.t 'cck_forms.work_hours.24h'
       elsif time_present?(open_time) or time_present?(close_time)
         ots, cts = time_to_s(open_time), time_to_s(close_time)
         if ots and cts
           result = sprintf('%s–%s', ots, cts)
         elsif ots
-          result = sprintf('с %s', ots)
+          result = sprintf("#{I18n.t 'cck_forms.work_hours.from'} %s", ots)
         else
-          result = sprintf('до %s', cts)
+          result = sprintf("#{I18n.t 'cck_forms.work_hours.till'} %s", cts)
         end
       end
 
       if open_until_last_client
         result += ' ' if result.present?
-        result += 'до последнего клиента'
+        result += I18n.t 'cck_forms.work_hours.until_last_client'
       end
 
       result
@@ -219,16 +218,16 @@ class CckForms::ParameterTypeClass::WorkHours
 
       if template
         header = ['<ul class="nav nav-pills">']
-        CckForms::ParameterTypeClass::WorkHours::DAYS.each { |day| header << '<li><a href="#"><input name="' + form_builder.object_name + '[days]" type="checkbox" value="' + day + '" /> ' + CckForms::ParameterTypeClass::WorkHours.day_en_to_ru_short(day) + '</a></li>' }
+        CckForms::ParameterTypeClass::WorkHours::DAYS.each { |day| header << '<li><a href="#"><input name="' + form_builder.object_name + '[days]" type="checkbox" value="' + day + '" /> ' + CckForms::ParameterTypeClass::WorkHours.day_to_short(day) + '</a></li>' }
         header = header.push('</ul>').join
       else
-        header = sprintf '<strong>%s</strong>:%s', CckForms::ParameterTypeClass::WorkHours::day_en_to_ru_short(day), form_builder.hidden_field(:day)
+        header = sprintf '<strong>%s</strong>:%s', CckForms::ParameterTypeClass::WorkHours::day_to_short(day), form_builder.hidden_field(:day)
       end
 
       open_until_last_client_html = unless options[:hide_open_until_last_client]
                                       <<HTML
                     <div class="checkbox">
-                      <label class="form_work_hours_option">#{ form_builder.check_box :open_until_last_client } до&nbsp;последнего&nbsp;клиента</label>
+                      <label class="form_work_hours_option">#{form_builder.check_box :open_until_last_client} <nobr>#{I18n.t 'cck_forms.work_hours.until_last_client'}</nobr></label>
                     </div>
 HTML
                                     end
@@ -242,12 +241,12 @@ HTML
             <table width="100%">
               <tr>
                 <td width="60%" class="form-inline">
-                  с #{ open_time_form }
-                  по #{ close_time_form }
+                  #{I18n.t 'cck_forms.work_hours.time_from'} #{open_time_form}
+                  #{I18n.t 'cck_forms.work_hours.time_till'} #{close_time_form}
                 </td>
                 <td width="40%">
                     <div class="checkbox">
-                      <label class="form_work_hours_option">#{ form_builder.check_box :open_24_hours } круглосуточно</label>
+                      <label class="form_work_hours_option">#{form_builder.check_box :open_24_hours} #{I18n.t 'cck_forms.work_hours.24h'}</label>
                     </div>
                     #{open_until_last_client_html}
                 </td>

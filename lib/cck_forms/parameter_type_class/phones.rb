@@ -42,7 +42,7 @@ class CckForms::ParameterTypeClass::Phones
   end
 
   # Cleanup phone format
-  def self.demongoize_value(value, parameter_type_class=nil)
+  def self.demongoize_value(value, _parameter_type_class=nil)
     if value
       value.map do |phone|
         phone = phone.stringify_keys!
@@ -120,7 +120,7 @@ class CckForms::ParameterTypeClass::Phones
           $phones.children("p:last").after($newPhone);
         }
 
-        $phones.append('<a href="#" class="add_more">Добавить еще телефонов</a>');
+        $phones.append('<a href="#" class="add_more">#{I18n.t 'cck_forms.phones.add_more'}</a>');
         $phones.children(".add_more").click(function() {
           for(var i = 0; i < doTimes; ++ i) {
             createPhone();

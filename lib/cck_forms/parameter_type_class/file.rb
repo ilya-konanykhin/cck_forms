@@ -48,8 +48,9 @@ class CckForms::ParameterTypeClass::File
   def self.create_load_form(helper:, file:, input_name:, append_create: false, clean_remove: false, widget_id: nil, disabled: false, multiple: false, with_desc: false)
     cont_id   = 'container_' + (widget_id.presence || form_name_to_id(input_name))
 
-    # создаем временное поле, чтобы пока аяксовый ответ не вернется, мы могли все же отправить родительскую форму
-    # и не потерять при этом данные из поля
+    # create temporary hidden field to keep the value in form context until AJAX request is finished
+    # (otherwise submitting the form before that moment sends it without the file value which can lead to confusion
+    # and consequent data loss in a controller)
     file_id = file.is_a?(file_type) ? file.id.to_s : file.to_s
     temp_field, remove_temp_field = '', ''
     if file_id.present?
@@ -85,12 +86,12 @@ class CckForms::ParameterTypeClass::File
   end
 
   # Returns empty string
-  def to_s
+  def to_s(_options = nil)
     ''
   end
 
   # Returns a file name
-  def to_diff_value(options = {})
+  def to_diff_value(_options = {})
     value.try! :name
   end
 end

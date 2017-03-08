@@ -8,7 +8,7 @@ class CckForms::ParameterTypeClass::Enum
   end
 
   # Current string value from valid_values
-  def to_s(options = nil)
+  def to_s(_options = nil)
     return '' if value.blank?
     valid_values[value].to_s
   end

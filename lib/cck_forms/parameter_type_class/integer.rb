@@ -7,7 +7,7 @@ class CckForms::ParameterTypeClass::Integer
     value.to_i
   end
 
-  def to_s(options = nil)
+  def to_s(_options = nil)
     value.to_i != 0 ? value.to_i.to_s : ''
   end
 

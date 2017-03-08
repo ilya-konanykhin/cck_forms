@@ -22,3 +22,43 @@ ru:
       watermarkless_album: Альбом без водяного знака
       watermarkless_image: Картинка без водяного знака
       work_hours: Часы работы
+
+    boolean:
+      yes: да
+      no: нет
+
+    checkboxes:
+      all_values: Все значения%{param_title}
+      all_values_except: Все значения%{param_title}, кроме
+
+    date_range:
+      till: до
+      from: от
+
+    integer_range:
+      till: до
+      from: от
+      less_than: до
+      more_than: свыше
+
+    phones:
+      add_more: Добавить еще телефонов
+
+    work_hours:
+      day_short:
+        mon: Пн
+        tue: Вт
+        wed: Ср
+        thu: Чт
+        fri: Пт
+        sat: Сб
+        sun: Вс
+      no_vacations: без выходных
+      work_days: будние
+      sat_sun: сб, вс
+      24h: круглосуточно
+      from: с
+      till: до
+      until_last_client: до последнего клиента
+      time_from: с
+      time_till: по

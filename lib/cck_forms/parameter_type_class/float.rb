@@ -7,7 +7,7 @@ class CckForms::ParameterTypeClass::Float
     value.to_f
   end
 
-  def to_s(options = nil)
+  def to_s(_options = nil)
     value.to_f != 0.0 ? value.to_f : ''
   end
 

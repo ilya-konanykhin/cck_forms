@@ -42,9 +42,9 @@ class CckForms::ParameterTypeClass::DateRange
     from, till = types[:from], types[:till]
 
     if from.blank?
-      "до #{till}"
+      [I18n.t('cck_forms.date_range.till'), till].join(' ')
     elsif till.blank?
-      "от #{from}"
+      [I18n.t('cck_forms.date_range.from'), from].join(' ')
     elsif from == till
       from.to_s
     else
