@@ -159,7 +159,8 @@ HTML
   end
 
   def to_s(options = {})
-    HTML::FullSanitizer.new.sanitize to_html(options)
+    sanitizer = defined?(Rails::Html::FullSanitizer) ? Rails::Html::FullSanitizer : HTML::FullSanitizer
+    sanitizer.new.sanitize to_html(options)
   end
 
 
