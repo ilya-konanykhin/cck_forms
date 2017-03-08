@@ -210,6 +210,8 @@ Available field types
 
 ***WorkHours***: complex input to construct work schedule on a weekly basis.
 
+***WatermarklessAlbum***, ***WatermarklessImage***: same as Album & Image, but do not place watermarks. For banners or
+important sliders, for example.
 
 Configuration
 -------------
