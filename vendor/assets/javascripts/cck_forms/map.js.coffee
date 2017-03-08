@@ -260,32 +260,6 @@ window.init_map = (canvas) ->
 
   $canvas.data('maps', maps)
 
-
-  cityInputSelectorst = [
-        '#' + $source.data("cityid"),
-        '[data-behavior="map_city_change"]'
-  ].join(', ')
-  $cityInput = $(cityInputSelectorst)
-
-  if $cityInput.data('mapCityValue')
-    mapCityValue = $cityInput.data('mapCityValue')
-    $cityInput   = $cityInput.find(mapCityValue)
-
-  handleCityChange = =>
-    cities = $source.data("cities")
-    city   = cities[$cityInput.val()]
-
-    if city
-      latLng = new google.maps.LatLng(city.lat, city.lon) unless hasLatLng
-      zoom   = city.zoom unless hasZoom
-
-    $.each $canvas.data('maps'), (i, map) ->
-      map.setCenter latitude: latLng.lat(), longitude: latLng.lng()
-      map.setZoom zoom
-
-  $cityInput.change handleCityChange
-  handleCityChange() unless $lat.val() or $lon.val()
-
   activeMapType = $canvas
   .find('.cck-map-switchers a.active')
   .data("mapType")

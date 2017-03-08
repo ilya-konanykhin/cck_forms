@@ -141,8 +141,6 @@ class CckForms::ParameterTypeClass::Map
   #
   # 1 click on a map places a point (writing to hidden fields). 1 click on a point removes it (emptying fields).
   #
-  # TODO: remove listeners of "city" events, it's out of scope for this gem
-  #
   # options:
   #
   #   value     - current point
@@ -175,19 +173,6 @@ class CckForms::ParameterTypeClass::Map
       inputs << value_builder.hidden_field(:zoom,      value: value['zoom'])
       inputs << value_builder.hidden_field(:type,      value: value['type'])
     end
-
-    city_id = id.clone
-    city_id['map'] = 'city'
-    city_id += '_value'
-
-    cities_js = []
-    city_class = if defined?(KazakhstanCities::City) then KazakhstanCities::City elsif defined?(City) then City end
-    if city_class
-      city_class.all.each do |city|
-        cities_js.push [city.id, {lat: city.lat.to_f, lon: city.lon.to_f, zoom: city.zoom.to_i}]
-      end
-    end
-    cities_js = Hash[cities_js].to_json
 
     allowed_maps = @@map_providers
     map_names = {'google' => 'Google', 'yandex' => 'Yandex'}
@@ -238,7 +223,7 @@ class CckForms::ParameterTypeClass::Map
       window.onload = loadMapScripts;
       </script>
 
-      <div data-map-data-source data-options='#{options.to_json}' data-id="#{id}" data-cities='#{cities_js}' data-cityid="#{city_id}" data-allowed-maps='#{allowed_maps.to_json}' style="width: #{options[:width]}px; height: #{options[:height]}px">
+      <div data-map-data-source data-options='#{options.to_json}' data-id="#{id}" data-allowed-maps='#{allowed_maps.to_json}' style="width: #{options[:width]}px; height: #{options[:height]}px">
         #{map_html_containers.join}
       </div>
 
