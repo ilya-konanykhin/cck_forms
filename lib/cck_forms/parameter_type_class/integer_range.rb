@@ -7,10 +7,6 @@
 class CckForms::ParameterTypeClass::IntegerRange # Rover :)
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Диапазон между двумя целыми числами'
-  end
-
   # {from: 500, to: 1000, ranges: {"300-600" => true, "601-900" => true, "901-1500" => false}}
   def mongoize
     value_from_form = value

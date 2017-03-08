@@ -119,7 +119,7 @@ module CckForms::ParameterTypeClass::Base
 
     # A type name, e.g. "A text string"
     def name
-      nil
+      I18n.t("cck_forms.parameter_type_name.#{code}")
     end
   end
 

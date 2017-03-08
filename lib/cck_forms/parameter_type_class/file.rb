@@ -4,10 +4,6 @@ class CckForms::ParameterTypeClass::File
   include CckForms::ParameterTypeClass::Base
   include CckForms::NeofilesDenormalize
 
-  def self.name
-    'Файл'
-  end
-
   def self.file_type
     ::Neofiles::File
   end

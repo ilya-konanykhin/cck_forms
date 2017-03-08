@@ -4,10 +4,6 @@ class CckForms::ParameterTypeClass::Album
   include CckForms::ParameterTypeClass::Base
   include CckForms::NeofilesDenormalize
 
-  def self.name
-    'Альбом'
-  end
-
   # Converts input array of Neofiles::Image or IDs to array of hashes (denormalized image data) or IDs
   def mongoize
     the_value = value.is_a?(Hash) ? value['value'] : value

@@ -4,10 +4,6 @@ class CckForms::ParameterTypeClass::Date
   include CckForms::ParameterTypeClass::Base
   include CckForms::DateTime
 
-  def self.name
-    'Дата'
-  end
-
   # Date SELECT
   def build_form(form_builder, options)
     set_value_in_hash options

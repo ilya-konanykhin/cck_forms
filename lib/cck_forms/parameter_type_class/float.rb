@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::Float
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Дробное число'
-  end
-
   def mongoize
     value.to_f
   end

@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::Text
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Текст'
-  end
-
   # Builds a TEXTAREA
   def build_form(form_builder, options)
     set_value_in_hash options

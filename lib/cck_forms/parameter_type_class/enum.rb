@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::Enum
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Значение из списка'
-  end
-
   def mongoize
     value.presence
   end

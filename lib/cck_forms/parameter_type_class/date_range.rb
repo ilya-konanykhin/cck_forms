@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::DateRange
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Диапазон между двумя датами'
-  end
-
   # Converts input hash of type {from: ..., till: ...} to MongoDB format
   def mongoize
     value_from_form = value

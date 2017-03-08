@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::StringCollection
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Массив строк'
-  end
-
   # String: "aaa\r\nxxx" -> ["aaa", "xxx"]
   # :each: -> array
   def mongoize

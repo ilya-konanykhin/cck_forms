@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::Checkboxes
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Галочки'
-  end
-
   # {kazakh: '1', russian: '0', english: '1'} -> ['kazakh', 'english']
   def mongoize
     resulting_set = []

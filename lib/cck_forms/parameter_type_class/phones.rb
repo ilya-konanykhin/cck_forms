@@ -8,10 +8,6 @@ class CckForms::ParameterTypeClass::Phones
   PREFIX              = Rails.application.config.cck_forms.phones.prefix
   NUMBER_PARTS_GLUE   = Rails.application.config.cck_forms.phones.number_parts_glue
 
-  def self.name
-    'Телефоны'
-  end
-
   # Filters input array for phone-like Hashes: prefix: ..., code: ..., number: ...
   # Cleans them up and returns.
   #

@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::Boolean
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Галочка (да/нет)'
-  end
-
   # Is it true?
   def value?
     value.present? && value != '0'

@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::Integer
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Целое число'
-  end
-
   def mongoize
     value.to_i
   end

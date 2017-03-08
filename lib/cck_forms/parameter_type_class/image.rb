@@ -1,11 +1,6 @@
 # Represents a single image. A subclass of File.
 #
 class CckForms::ParameterTypeClass::Image < CckForms::ParameterTypeClass::File
-
-  def self.name
-    'Картинка'
-  end
-
   def self.file_type
     ::Neofiles::Image
   end

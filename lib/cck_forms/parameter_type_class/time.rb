@@ -4,10 +4,6 @@ class CckForms::ParameterTypeClass::Time
   include CckForms::ParameterTypeClass::Base
   include CckForms::DateTime
 
-  def self.name
-    'Время'
-  end
-
   # Time SELECT
   def build_form(form_builder, options)
     set_value_in_hash options

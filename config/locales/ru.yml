@@ -1,0 +1,24 @@
+ru:
+  cck_forms:
+    parameter_type_name:
+      album: Альбом
+      boolean: Галочка (да/нет)
+      checkboxes: Галочки
+      date: Дата
+      date_range: Диапазон между двумя датами
+      date_time: Дата и время
+      enum: Значение из списка
+      file: Файл
+      float: Дробное число
+      image: Картинка
+      integer: Целое число
+      integer_range: Диапазон между двумя целыми числами
+      map: Точка на карте
+      phones: Телефоны
+      string: Строка
+      string_collection: Массив строк
+      text: Текст
+      time: Время
+      watermarkless_album: Альбом без водяного знака
+      watermarkless_image: Картинка без водяного знака
+      work_hours: Часы работы

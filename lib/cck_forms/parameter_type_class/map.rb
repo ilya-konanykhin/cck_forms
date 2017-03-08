@@ -12,10 +12,6 @@ class CckForms::ParameterTypeClass::Map
 
   mattr_accessor :google_maps_api_key
 
-  def self.name
-    'Точка на карте'
-  end
-
   # In MongoDB: {latlon: [x, y], zoom: z}
   #
   # In application: {

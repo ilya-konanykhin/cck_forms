@@ -3,10 +3,6 @@
 class CckForms::ParameterTypeClass::WorkHours
   include CckForms::ParameterTypeClass::Base
 
-  def self.name
-    'Часы работы'
-  end
-
   DAYS = %w{ mon tue wed thu fri sat sun }
   DAYS_RU_SHORT = %w{ Пн Вт Ср Чт Пт Сб Вс }
 
