@@ -44,9 +44,9 @@ module CckForms::DateTime
   module ClassMethods
     include DateTimeParser
 
-    def default_options_for_date_time_selectors(value)
+    def default_options_for_date_time_selectors(value, options={})
       date_in_time_zone = value.in_time_zone(Rails.application.config.time_zone) rescue nil
-      [{default: date_in_time_zone, include_blank: false, with_css_classes: true}, {class: 'form-control'}]
+      [{default: date_in_time_zone, include_blank: !options[:required], with_css_classes: true}, {class: 'form-control'}]
     end
 
     def demongoize_value(value, _parameter_type_class=nil)
