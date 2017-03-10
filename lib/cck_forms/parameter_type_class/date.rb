@@ -14,7 +14,7 @@ class CckForms::ParameterTypeClass::Date
   def self.build_date_form(form_builder, options, type = '')
     val =  options[:value].is_a?(Hash) ? options[:value][type] : options[:value]
     val = CckForms::ParameterTypeClass::Time::date_object_from_what_stored_in_database(val)
-    form_element_options, form_element_html = CckForms::ParameterTypeClass::Time::default_options_for_date_time_selectors(val)
+    form_element_options, form_element_html = CckForms::ParameterTypeClass::Time::default_options_for_date_time_selectors(val, options)
     form_element_html.merge!({required: options[:required]})
     ('<div class="form-inline">%s</div>' % form_builder.fields_for(:value) { |datetime_builder| datetime_builder.date_select type, form_element_options, form_element_html}).html_safe
   end
