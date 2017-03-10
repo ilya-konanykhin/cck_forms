@@ -7,7 +7,7 @@ class CckForms::ParameterTypeClass::Time
   # Time SELECT
   def build_form(form_builder, options)
     set_value_in_hash options
-    value = CckForms::ParameterTypeClass::Time::date_object_from_what_stored_in_database(options[:value])
+    value = CckForms::ParameterTypeClass::Time::date_object_from_what_stored_in_database(options[:value], options)
     form_element_options, form_element_html = CckForms::ParameterTypeClass::Time::default_options_for_date_time_selectors(value)
     form_element_options.merge!({ignore_date: true, minute_step: 5})
     form_element_html.merge!({required: options[:required]})
