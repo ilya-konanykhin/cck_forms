@@ -45,8 +45,8 @@ module CckForms::DateTime
     include DateTimeParser
 
     def default_options_for_date_time_selectors(value, options={})
+      value ||= DateTime.current if options[:required]
       date_in_time_zone = value.in_time_zone(Rails.application.config.time_zone) rescue nil
-      date_in_time_zone = DateTime.current.in_time_zone(Rails.application.config.time_zone) if options[:required]
       [{selected: date_in_time_zone, default: date_in_time_zone, include_blank: !options[:required], with_css_classes: true}, {class: 'form-control'}]
     end
 
