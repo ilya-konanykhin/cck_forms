@@ -28,10 +28,13 @@ class CckForms::ParameterTypeClass::Checkboxes
     value.present? or return {}
 
     valid_values = parameter_type_class.try!(:valid_values) || value.map { |x| [x, nil] }
-    valid_values.reduce({}) do |r, (key, _)|
+    valid_values = valid_values.reduce({}) do |r, (key, _)|
       r[key] = value.include?(key) ? '1' : '0'
       r
     end
+
+    priority_values = valid_values.extract!(*value)
+    priority_values.merge valid_values
   end
 
   # Comma-separated list of checked entries. Options:
@@ -157,7 +160,9 @@ class CckForms::ParameterTypeClass::Checkboxes
       method = :each_pair
     end
 
-    valid_values.send(method) do |k, v|
+    values = Hash[value.keys.map { |key| [key, valid_values[key]] } ]
+
+    values.send(method) do |k, v|
       if !options[:only] || options[:only] == k || options[:only].try(:include?, k)
         result += form_builder.fields_for :value do |ff|
 
