@@ -33,7 +33,7 @@ class CckForms::ParameterTypeClass::Checkboxes
       r
     end
 
-    priority_values = valid_values.extract!(*value)
+    priority_values = value.respond_to?(:keys) ? valid_values.extract!(*value.keys) : valid_values.extract!(*value)
     priority_values.merge valid_values
   end
 
@@ -159,7 +159,7 @@ class CckForms::ParameterTypeClass::Checkboxes
     elsif valid_values.is_a? Hash
       method = :each_pair
     end
-
+    
     values = Hash[value.keys.map { |key| [key, valid_values[key]] } ]
 
     values.send(method) do |k, v|
@@ -181,7 +181,7 @@ class CckForms::ParameterTypeClass::Checkboxes
       end
     end
 
-    result
+    sprintf '<div class="checkboxes" id="%1$s">%2$s</div><script type="text/javascript">$(function() {$("#%1$s").checkboxes()})</script>', form_builder_name_to_id(form_builder), result
   end
 
 
