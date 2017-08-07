@@ -1,27 +1,42 @@
 $ ->
-  $.widget 'cck.checkboxes', _create: ->
 
-    $element = @element
+  #
+  # Helper widget to allow sorting of checkboxes, if jquery.sortable is available
+  #
+  $.widget "cck.checkboxes",
+    
+    _create: ->
+      @_checkBoxBlockSelector = ".form_check_box_block"
 
-    $('input:checked').each ->
-      $(this).closest('.form_check_box_block').addClass 'sticky'
+      @_ensureSortableIsAvailable =>
+        @_initStickies()
+        @_bind()
 
-    $element.sortable items: '.sticky'
+    _ensureSortableIsAvailable: (callback)->
+      callback() if $(document).sortable
 
-    $element.on 'change', '.form_check_box_block input:checkbox', ->
+    _initStickies: ->
+      @element.find("input:checked").each (_i, checkbox)=>
+        $(checkbox).closest(@_checkBoxBlockSelector).addClass("sticky")
 
-      $checkbox = $(this)
-      $div = $checkbox.closest('.form_check_box_block')
+      @element.sortable
+        items: ".sticky"
 
-      if !$checkbox.prop('checked')
-        $div.removeClass 'sticky'
+    _bind: ->
+      @element.on "change", "#{@_checkBoxBlockSelector} input:checkbox", (e)=>
+        @_checkboxChange($(e.target))
 
-      $lastSticky = $element.find('.sticky').last()
+    _checkboxChange: ($checkbox)->
+      $container = $checkbox.closest(@_checkBoxBlockSelector)
 
-      if $div.prev('.form_check_box_block').get(0) != $lastSticky.get(0)
+      $container.removeClass("sticky") unless $checkbox.is(":checked")
+
+      $lastSticky = @element.find(".sticky").last()
+
+      if $container.prev(@_checkBoxBlockSelector).get(0) != $lastSticky.get(0)
         if $lastSticky.size() == 0
-          $element.prepend $div
+          @element.prepend($container)
         else
-          $div.insertAfter $lastSticky
-      if $checkbox.prop('checked')
-        $div.addClass('sticky')
+          $container.insertAfter($lastSticky)
+
+      $container.addClass("sticky") if $checkbox.is(":checked")
