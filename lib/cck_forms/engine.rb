@@ -21,6 +21,6 @@ module CckForms
     config.cck_forms.phones.number_parts_glue   = '-'
 
     # maps
-    config.cck_forms.maps = ActiveSupport::OrderedOptions.new
+    config.cck_forms.maps                       = ActiveSupport::OrderedOptions.new
   end
 end

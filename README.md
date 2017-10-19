@@ -239,7 +239,7 @@ config.cck_forms.phones.prefix = '+7'
 # the glue for concatenating phone number parts: 111[glue]22[glue]33
 config.cck_forms.phones.number_parts_glue = '-'
 
-# sets the default map provider, if this config is not specified, then will set to google
+# the default map provider; if not specified, google is the default
 config.cck_forms.maps.default_type = 'yandex'.freeze
 ```
 
