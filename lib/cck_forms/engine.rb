@@ -19,5 +19,8 @@ module CckForms
     config.cck_forms.phones.mobile_codes        = %w{ 777 705 771   701 702 775 778   700   707 }
     config.cck_forms.phones.prefix              = '+7'
     config.cck_forms.phones.number_parts_glue   = '-'
+
+    # maps
+    config.cck_forms.maps                       = ActiveSupport::OrderedOptions.new
   end
 end
