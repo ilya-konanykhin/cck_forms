@@ -96,8 +96,14 @@ HTML
   def to_diff_value(options = {})
     view_context = options[:view_context]
     images_html_list = []
-    value.each do |image_id|
-      images_html_list << "<img style='width: 64px; height: 64px;' src='#{view_context.neofiles_image_path(id: image_id, format: '64x64', crop: 1)}'>"
+
+    value.each do |elem|
+      if elem.present?
+        id = elem.is_a?(BSON::Document) ? elem['_id'] : elem
+        images_html_list << "<img style='width: 64px; height: 64px;' src='#{view_context.neofiles_image_path(id: id, format: '64x64', crop: 1)}'>"
+      else
+        images_html_list << nil
+      end
     end
 
     images_html_list.join.html_safe if images_html_list.any?
