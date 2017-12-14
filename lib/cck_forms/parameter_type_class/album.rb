@@ -95,15 +95,10 @@ HTML
   # Returns a collection of 64x64 IMGs
   def to_diff_value(options = {})
     view_context = options[:view_context]
-    images_html_list = []
 
-    value.each do |elem|
-      if elem.present?
-        id = elem.is_a?(BSON::Document) ? elem['_id'] : elem
-        images_html_list << "<img style='width: 64px; height: 64px;' src='#{view_context.neofiles_image_path(id: id, format: '64x64', crop: 1)}'>"
-      else
-        images_html_list << nil
-      end
+    images_html_list = (value || []).map(&:presence).compact.map do
+      id = elem.is_a?(BSON::Document) ? elem['_id'] : elem
+      "<img style='width: 64px; height: 64px;' src='#{view_context.neofiles_image_path(id: id, format: '64x64', crop: 1)}'>"
     end
 
     images_html_list.join.html_safe if images_html_list.any?

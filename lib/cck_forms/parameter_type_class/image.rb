@@ -16,8 +16,6 @@ class CckForms::ParameterTypeClass::Image < CckForms::ParameterTypeClass::File
     if value.present?
       id = value.is_a?(BSON::Document) ? value['_id'] : value
       "<img style='width: 64px; height: 64px;' src='#{view_context.neofiles_image_path(id: id, format: '64x64', crop: 1)}'>".html_safe
-    else
-      return nil
     end
   end
 end
