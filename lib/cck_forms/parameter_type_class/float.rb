@@ -14,6 +14,6 @@ class CckForms::ParameterTypeClass::Float
   # HTML input
   def build_form(form_builder, options)
     set_value_in_hash options
-    form_builder.number_field :value, {class: 'form-control input-small'}.merge(options)
+    form_builder.number_field :value, {step: 'any', class: 'form-control input-small'}.merge(options)
   end
 end
