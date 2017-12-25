@@ -5,7 +5,7 @@ class CckForms::ParameterTypeClass::Map
 
   MAP_TYPE_GOOGLE = 'google'.freeze
   MAP_TYPE_YANDEX = 'yandex'.freeze
-  DEFAULT_MAP_TYPE = MAP_TYPE_GOOGLE
+  DEFAULT_MAP_TYPE = Rails.application.config.cck_forms.maps.default_type || MAP_TYPE_GOOGLE
 
   mattr_accessor :map_providers
   @@map_providers = [MAP_TYPE_YANDEX, MAP_TYPE_GOOGLE]

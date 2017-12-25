@@ -28,10 +28,14 @@ class CckForms::ParameterTypeClass::Checkboxes
     value.present? or return {}
 
     valid_values = parameter_type_class.try!(:valid_values) || value.map { |x| [x, nil] }
-    valid_values.reduce({}) do |r, (key, _)|
+    valid_values = valid_values.reduce({}) do |r, (key, _)|
       r[key] = value.include?(key) ? '1' : '0'
       r
     end
+
+    valid_values    = valid_values.dup
+    priority_values = valid_values.extract!(*(value.respond_to?(:keys) ? value.keys : value))
+    priority_values.merge valid_values
   end
 
   # Comma-separated list of checked entries. Options:
@@ -150,33 +154,31 @@ class CckForms::ParameterTypeClass::Checkboxes
     set_value_in_hash options
     val = options[:value]
 
-    result = ''
-    if valid_values.is_a? Array
-      method = :each_with_index
-    elsif valid_values.is_a? Hash
-      method = :each_pair
-    end
+    result          = ''
+    valid_values    = self.valid_values.dup
+    valid_values    = valid_values.is_a?(Hash) ? valid_values : valid_values.zip([])
+    priority_values = valid_values.extract!(*(value.respond_to?(:keys) ? value.keys : value))
 
-    valid_values.send(method) do |k, v|
-      if !options[:only] || options[:only] == k || options[:only].try(:include?, k)
-        result += form_builder.fields_for :value do |ff|
+    priority_values.merge(valid_values).each_pair do |k, v|
+      next if options[:only] && options[:only] != k && !options[:only].try(:include?, k)
 
-          begin
-            checked = ! val.try(:[], k).to_i.zero?
-          rescue
-            checked = false
-          end
+      result += form_builder.fields_for :value do |ff|
 
-          v = options[:map][v] || v
-
-          # skip `required` since form will not be submitted unless a user checks all the checkboxes
-          data = options[:data] ? extract_data_for_key(k, options[:data]) : nil
-          sprintf(options[:block], ff.check_box(k.to_sym, {checked: checked}, '1', options[:for] == :search ? nil : '0'), ff.label(k.to_sym, v, data: data)).html_safe
+        begin
+          checked = !val.try(:[], k).to_i.zero?
+        rescue
+          checked = false
         end
+
+        v = options[:map][v] || v
+
+        # skip `required` since form will not be submitted unless a user checks all the checkboxes
+        data = options[:data] ? extract_data_for_key(k, options[:data]) : nil
+        sprintf(options[:block], ff.check_box(k.to_sym, {checked: checked}, '1', options[:for] == :search ? nil : '0'), ff.label(k.to_sym, v, data: data)).html_safe
       end
     end
 
-    result
+    sprintf '<div class="checkboxes" id="%1$s">%2$s</div><script type="text/javascript">$(function() {$("#%1$s").checkboxes()})</script>', form_builder_name_to_id(form_builder), result
   end
 
 
