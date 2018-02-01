@@ -8,7 +8,10 @@ class CckForms::ParameterTypeClass::Float
   end
 
   def to_s(_options = nil)
+    options ||= {}
+    trailing_zeros = options.fetch(:trailing_zeros, true)
     value.to_f != 0.0 ? value.to_f : ''
+    trailing_zeros && value.to_i == value ? value.to_i  : value
   end
 
   # HTML input
