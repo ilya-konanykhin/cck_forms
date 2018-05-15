@@ -18,10 +18,10 @@ class CckForms::ParameterTypeClass::FloatRange
     if @extra_options[:ranges].respond_to? :each
       @extra_options[:ranges].each do |range_string|
         low, high = range_string.split(range_string_delimiter)
-        if high.to_i.to_s != high.to_s
+        if high.to_f.to_s != high.to_s
           high = Integer::MAX_32BIT
         end
-        low, high = low.to_i, high.to_i
+        low, high = low.to_f, high.to_f
 
         #   -----
         # [ RANGE ]
@@ -141,9 +141,9 @@ class CckForms::ParameterTypeClass::FloatRange
   def humanized_float_ranges_for_select
     @extra_options[:ranges].map do |range_string|
       low, high = range_string.split(range_string_delimiter)
-      if low.to_i.to_s != low.to_s
+      if low.to_f.to_s != low.to_s
         option_text = [I18n.t('cck_forms.float_range.less_than'), high].join(' ')
-      elsif high.to_i.to_s != high.to_s
+      elsif high.to_f.to_s != high.to_s
         option_text = [I18n.t('cck_forms.float_range.more_than'), low].join(' ')
       else
         option_text = [low, high].join(default_float_range_delimiter)
