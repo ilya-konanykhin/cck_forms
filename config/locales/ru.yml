@@ -41,6 +41,12 @@ ru:
       less_than: до
       more_than: свыше
 
+    float_range:
+      till: до
+      from: от
+      less_than: до
+      more_than: свыше
+
     phones:
       add_more: Добавить еще телефонов
 
