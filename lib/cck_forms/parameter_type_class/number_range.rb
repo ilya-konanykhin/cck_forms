@@ -152,7 +152,6 @@ class CckForms::ParameterTypeClass::NumberRange
   end
 
   def humanized_number_ranges_for_select
-    abort self.class.code
     @extra_options[:ranges].map do |range_string|
       low, high = range_string.split(range_string_delimiter)
       if low.to_i.to_s != low.to_s
