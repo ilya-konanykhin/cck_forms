@@ -12,8 +12,8 @@ class CckForms::ParameterTypeClass::NumberRange
     value_from_form = value
     return nil if value_from_form.blank?
 
-    from = from_value value_from_form
-    till = till_value value_from_form
+    from = normalize_number value_from_form.try(:[], 'from')
+    till = normalize_number value_from_form.try(:[], 'till')
 
     db_representation = {
       from: from,
@@ -64,8 +64,8 @@ class CckForms::ParameterTypeClass::NumberRange
 
     delimiter = options[:delimeter].presence || default_number_range_delimiter
 
-    from = value.try(:[], 'from').to_i
-    till = value.try(:[], 'till').to_i
+    from = normalize_number value.try(:[], 'from')
+    till = normalize_number value.try(:[], 'till')
 
     return '' if from.zero? && till.zero?
 
@@ -115,8 +115,6 @@ class CckForms::ParameterTypeClass::NumberRange
     form_builder.fields_for :value do |ff|
       from_field = form_field ff, :from, options
       till_field = form_field ff, :till, options
-      # from_field = ff.number_field :from, options.merge(value: value.try(:[], 'from')).reverse_merge(default_style)
-      # till_field = ff.number_field :till, options.merge(value: value.try(:[], 'till')).reverse_merge(default_style)
       result << [from_field, till_field].join(delimiter).html_safe
     end
     result << '</div>'
@@ -154,9 +152,9 @@ class CckForms::ParameterTypeClass::NumberRange
   def humanized_number_ranges_for_select
     @extra_options[:ranges].map do |range_string|
       low, high = range_string.split(range_string_delimiter)
-      if low.to_i.to_s != low.to_s
+      if normalize_number(low).to_s != low.to_s
         option_text = [I18n.t("cck_forms.#{self.class.code}.less_than"), high].join(' ')
-      elsif high.to_i.to_s != high.to_s
+      elsif normalize_number(high).to_s != high.to_s
         option_text = [I18n.t("cck_forms.#{self.class.code}.more_than"), low].join(' ')
       else
         option_text = [low, high].join(default_number_range_delimiter)
