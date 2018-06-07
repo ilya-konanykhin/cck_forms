@@ -24,10 +24,10 @@ class CckForms::ParameterTypeClass::NumberRange
     if @extra_options[:ranges].respond_to? :each
       @extra_options[:ranges].each do |range_string|
         low, high = range_string.split(range_string_delimiter)
-        if high.to_i.to_s != high.to_s
+        if normalize_number(high).to_s != high.to_s
           high = Integer::MAX_32BIT
         end
-        low, high = low.to_i, high.to_i
+        low, high = normalize_number(low), normalize_number(high)
 
         #   -----
         # [ RANGE ]
