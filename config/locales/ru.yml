@@ -13,10 +13,10 @@ ru:
       image: Картинка
       integer: Целое число
       integer_range: Диапазон между двумя целыми числами
+      float_range: Диапазон между двумя дробными числами
       map: Точка на карте
       phones: Телефоны
       string: Строка
-      string_collection: Массив строк
       text: Текст
       time: Время
       watermarkless_album: Альбом без водяного знака
@@ -36,6 +36,12 @@ ru:
       from: от
 
     integer_range:
+      till: до
+      from: от
+      less_than: до
+      more_than: свыше
+
+    float_range:
       till: до
       from: от
       less_than: до
