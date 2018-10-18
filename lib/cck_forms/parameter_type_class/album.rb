@@ -70,8 +70,9 @@ class CckForms::ParameterTypeClass::Album
 
     <<HTML
       <div class="neofiles-album-compact" id="#{id}">
+        #{add_file_form if Rails.application.config.neofiles.album_append_create_side == :left}
         #{file_forms.join}
-        #{add_file_form}
+        #{add_file_form if Rails.application.config.neofiles.album_append_create_side == :right}
       </div>
 
       <script type="text/javascript">
