@@ -63,28 +63,32 @@ class CckForms::ParameterTypeClass::Phones
     value = options[:value].presence
     value = [] unless !value.blank? and value.is_a? Array
 
-    result = value.map { |phone| build_single_form(form_builder, phone) }
+    result = value.map { |phone| build_single_form(form_builder, phone, options) }
 
-    [1, CckForms::ParameterTypeClass::Phones::MIN_PHONES_IN_FORM - result.length].max.times { result << build_single_form(form_builder, {}) }
+    [1, CckForms::ParameterTypeClass::Phones::MIN_PHONES_IN_FORM - result.length].max.times { result << build_single_form(form_builder, {}, options) }
 
     id = form_builder_name_to_id form_builder
-    sprintf '<div id="%s">%s</div>%s', id, result.join, script(id)
+    sprintf '<div id="%s">%s</div>%s', id, result.join, script(id, options)
   end
 
   # HTML for sinle phone number
-  def build_single_form(form_builder, phone)
-    phone = {} unless phone.is_a? Hash
-    phone = blank_phone.merge phone
+  def build_single_form(form_builder, phone, options = {})
+    phone         = {} unless phone.is_a? Hash
+    phone         = blank_phone.merge phone
+    prefix_class  = options[:prefix_class].presence || 'input-tiny form-control'
+    code_class    = options[:code_class].presence   || 'input-mini form-control'
+    number_class  = options[:number_class].presence || 'input-small form-control'
+    group_class   = options[:group_class].presence  || 'form-inline'
 
     phone_form = []
 
     form_builder.fields_for(:value, index: '') do |phone_builder|
-      phone_form << phone_builder.text_field(:prefix, class: 'input-tiny form-control', value: phone['prefix'])
-      phone_form << phone_builder.text_field(:code,   class: 'input-mini form-control', value: phone['code'])
-      phone_form << phone_builder.text_field(:number, class: 'input-small form-control', value: phone['number'])
+      phone_form << phone_builder.text_field(:prefix, class: prefix_class,  value: phone['prefix'])
+      phone_form << phone_builder.text_field(:code,   class: code_class,    value: phone['code'])
+      phone_form << phone_builder.text_field(:number, class: number_class,  value: phone['number'])
     end
 
-    sprintf '<p class="form-inline">%s &mdash; %s &mdash; %s</p>', phone_form[0], phone_form[1], phone_form[2]
+    sprintf '<p class="%s">%s &mdash; %s &mdash; %s</p>', group_class, phone_form[0], phone_form[1], phone_form[2]
   end
 
   # 1 empty phone Hash: {prefix: '+7', code: '', number: ''}
@@ -96,7 +100,9 @@ class CckForms::ParameterTypeClass::Phones
     }
   end
 
-  def script(id)
+  def script(id, options = {})
+    button_class = options[:button_class]
+
     <<HTML
     <script type="text/javascript">
       $(function() {
@@ -120,7 +126,7 @@ class CckForms::ParameterTypeClass::Phones
           $phones.children("p:last").after($newPhone);
         }
 
-        $phones.append('<a href="#" class="add_more">#{I18n.t 'cck_forms.phones.add_more'}</a>');
+        $phones.append('<a href="#" class="add_more #{button_class}">#{I18n.t 'cck_forms.phones.add_more'}</a>');
         $phones.children(".add_more").click(function() {
           for(var i = 0; i < doTimes; ++ i) {
             createPhone();
