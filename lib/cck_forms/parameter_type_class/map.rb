@@ -174,14 +174,21 @@ class CckForms::ParameterTypeClass::Map
       inputs << value_builder.hidden_field(:type,      value: value['type'])
     end
 
-    allowed_maps = @@map_providers
-    map_names = {'google' => 'Google', 'yandex' => 'Yandex'}
+    allowed_maps      = @@map_providers
+    map_names         = {'google' => 'Google', 'yandex' => 'Yandex'}
     selected_map_type = value['type'].in?(allowed_maps) ? value['type'] : allowed_maps.first
+    group_class       = options[:group_class].presence  || 'btn-group'
+    switcher_classes  = {
+        'yandex' => options[:yandex_button_class],
+        'google' => options[:google_button_class]
+    }
 
     switchers = []
-    switchers << %Q|<div class="btn-group cck-map-switchers #{'hide' if allowed_maps.count < 2}" style="margin-top: 5px;">|
+    switchers << %Q|<div class="#{group_class} cck-map-switchers #{'hide' if allowed_maps.count < 2}" style="margin-top: 5px;">|
     allowed_maps.map do |map|
-      switchers << %Q|<a class="btn btn-default #{selected_map_type == map ? 'active' : nil}" href="#" data-map-type="#{map}">#{map_names[map]}</a>|
+      button_class = switcher_classes[map].presence || 'btn btn-default'
+      button_class << ' active' if selected_map_type == map
+      switchers << %Q|<a class="#{button_class}" href="#" data-map-type="#{map}">#{map_names[map]}</a>|
     end
     switchers << '</div>'
 
