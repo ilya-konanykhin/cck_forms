@@ -79,6 +79,7 @@ class CckForms::ParameterTypeClass::Phones
     code_class    = options[:code_class].presence   || 'input-mini form-control'
     number_class  = options[:number_class].presence || 'input-small form-control'
     group_class   = options[:group_class].presence  || 'form-inline'
+    delimiter     = options[:delimiter].presence    || '&mdash;'
 
     phone_form = []
 
@@ -88,7 +89,9 @@ class CckForms::ParameterTypeClass::Phones
       phone_form << phone_builder.text_field(:number, class: number_class,  value: phone['number'])
     end
 
-    sprintf '<p class="%s">%s &mdash; %s &mdash; %s</p>', group_class, phone_form[0], phone_form[1], phone_form[2]
+    full_phone_form = [phone_form[0], delimiter, phone_form[1], delimiter, phone_form[2]].join
+
+    sprintf '<p class="%s">%s</p>', group_class, full_phone_form
   end
 
   # 1 empty phone Hash: {prefix: '+7', code: '', number: ''}
