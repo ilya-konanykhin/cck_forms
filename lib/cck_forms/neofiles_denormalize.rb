@@ -11,7 +11,7 @@ module CckForms::NeofilesDenormalize
   module ClassMethods
     # Returns all fields of Neofiles::File obj to be denormalized
     def neofiles_attrs(obj)
-      obj.attributes.except *NEOFILES_LAZY_ATTRS
+      obj.attributes.with_indifferent_access.except *NEOFILES_LAZY_ATTRS
     end
 
     # Returns all fields of Neofiles::File to be denormalized or the object ID if the object itself can not be found
@@ -52,7 +52,7 @@ module CckForms::NeofilesDenormalize
         return if @__lazy_loaded
         @__lazy_loaded = true
         from_db = self.class.find(id)
-        attributes.merge! from_db.attributes.slice(*NEOFILES_LAZY_ATTRS)
+        attributes.merge! from_db.attributes.with_indifferent_access.slice(*NEOFILES_LAZY_ATTRS)
       end
 
       def obj.read_attribute(field)
