@@ -12,10 +12,10 @@ Gem::Specification.new do |s|
   s.description = 'Custom field types for Mongoid objects'
   s.license     = 'MIT'
 
-  s.files = Dir['{lib,vendor}/**/*'] + ['LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{config,lib,vendor}/**/*'] + ['LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
 
   s.add_dependency 'rails', '>= 4.0.0'
   s.add_dependency 'mongoid', '>= 5.0.0'
-  s.add_dependency 'neofiles', '~> 1.0'
+  s.add_dependency 'neofiles', '>= 1.0'
 end
