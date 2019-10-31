@@ -11,6 +11,9 @@ class CckForms::ParameterTypeClass::Map
   @@map_providers = [MAP_TYPE_YANDEX, MAP_TYPE_GOOGLE]
 
   mattr_accessor :google_maps_api_key
+  mattr_accessor :yandex_maps_api_key
+
+  @@yandex_maps_api_key = Rails.application.config.cck_forms.maps.yandex_maps_api_key
 
   # In MongoDB: {latlon: [x, y], zoom: z}
   #
@@ -197,13 +200,15 @@ class CckForms::ParameterTypeClass::Map
       map_html_containers.push %Q|<div id="#{id}_#{map}" data-id=#{id} class="map_widget" style="display: none; width: #{options[:width]}px; height: #{options[:height]}px"></div>|
     end
 
-    api_key = @@google_maps_api_key.present? ? "&key=#{@@google_maps_api_key}" : nil
+    google_api_key = @@google_maps_api_key.present? ? "&key=#{@@google_maps_api_key}" : nil
+    yandex_api_key = @@yandex_maps_api_key.present? ? "&apikey=#{@@yandex_maps_api_key}" : nil
 
     %Q|
     <div class="map-canvas">
       #{inputs.join}
 
       <script>
+      var yandex_maps_api_key = '#{@@yandex_maps_api_key}';
       var mapsReady = {google: false, yandex: false, callback: null, on: function(callback) {
         this.callback = callback;
         this.fireIfReady();
@@ -218,12 +223,12 @@ class CckForms::ParameterTypeClass::Map
         var script;
         script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=googleMapReady#{api_key}';
+        script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=googleMapReady#{google_api_key}';
         document.body.appendChild(script);
 
         script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = 'https://api-maps.yandex.ru/2.0/?coordorder=longlat&load=package.full&wizard=constructor&lang=ru-RU&onload=yandexMapReady';
+        script.src = 'https://api-maps.yandex.ru/2.0/?coordorder=longlat&load=package.full&wizard=constructor&lang=ru-RU&onload=yandexMapReady#{yandex_api_key}';
         document.body.appendChild(script);
       }
 
