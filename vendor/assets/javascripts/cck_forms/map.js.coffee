@@ -35,12 +35,12 @@ class CckFormsMap.AbstractMap
     @internalMapAPI.setZoom zoom
   setMarkerToPoint: (latitudeAndLongitude) ->
 
-  setCenterByGeocode: (geocode) ->
+  setCenterByGeocode: (geocode, apikey) ->
 
     options = {
       url:      'https://geocode-maps.yandex.ru/1.x/'
       dataType: 'json'
-      data:     {format: 'json', geocode: geocode, results: 1}
+      data:     {format: 'json', geocode: geocode, results: 1, apikey: apikey}
     }
 
     xhr = $.ajax options
