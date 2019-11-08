@@ -13,8 +13,6 @@ class CckForms::ParameterTypeClass::Map
   mattr_accessor :google_maps_api_key
   mattr_accessor :yandex_maps_api_key
 
-  @@yandex_maps_api_key = Rails.application.config.cck_forms.maps.yandex_maps_api_key
-
   # In MongoDB: {latlon: [x, y], zoom: z}
   #
   # In application: {
@@ -208,7 +206,6 @@ class CckForms::ParameterTypeClass::Map
       #{inputs.join}
 
       <script>
-      var yandex_maps_api_key = '#{@@yandex_maps_api_key}';
       var mapsReady = {google: false, yandex: false, callback: null, on: function(callback) {
         this.callback = callback;
         this.fireIfReady();
