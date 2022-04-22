@@ -218,7 +218,7 @@ class CckForms::ParameterTypeClass::WorkHours
 
       if template
         header = ['<ul class="nav nav-pills">']
-        CckForms::ParameterTypeClass::WorkHours::DAYS.each { |day| header << '<li><a href="javascript:void(0)"><input name="' + form_builder.object_name + '[days]" type="checkbox" value="' + day + '" /> ' + CckForms::ParameterTypeClass::WorkHours.day_to_short(day) + '</a></li>' }
+        CckForms::ParameterTypeClass::WorkHours::DAYS.each { |day| header << '<li class="nav-item"><a class="nav-link" href="javascript:void(0)"><input name="' + form_builder.object_name + '[days]" type="checkbox" value="' + day + '" /> ' + CckForms::ParameterTypeClass::WorkHours.day_to_short(day) + '</a></li>' }
         header = header.push('</ul>').join
       else
         header = sprintf '<strong>%s</strong>:%s', CckForms::ParameterTypeClass::WorkHours::day_to_short(day), form_builder.hidden_field(:day)
