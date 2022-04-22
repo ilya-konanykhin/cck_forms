@@ -241,7 +241,7 @@ $(function() {
 
             // mark checkboxes
             for(var i = 0, ic = days.length; i < ic; ++ i) {
-                $newGroup.find("input[name$=\"[days]\"][value=" + days[i] + "]").prop("checked", true).closest("li").addClass("active");
+                $newGroup.find("input[name$=\"[days]\"][value=" + days[i] + "]").prop("checked", true).closest(".nav-link").addClass("active");
             }
 
             // hide checkboxes, link-o-buttons will be in their place
@@ -289,7 +289,7 @@ $(function() {
                     this._days[dayName].workhoursday("value", $group.workhoursday("value"));
 
                     // mark the day as active
-                    input.parentNode.parentNode.className += " active";
+                    input.parentNode.className += " active";
 
                 } else {
 
@@ -300,7 +300,7 @@ $(function() {
                     if($group.find("input:checked[name$='[days]']").size() == 0) {
                         $group.remove();
                     } else {
-                        input.parentNode.parentNode.className = input.parentNode.parentNode.className.replace(/(^|\s)active($|\s)/, "$1");
+                        input.parentNode.className = input.parentNode.className.replace(/(^|\s)active($|\s)/, "$1");
                     }
                 }
 
