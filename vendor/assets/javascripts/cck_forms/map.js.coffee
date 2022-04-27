@@ -256,7 +256,7 @@ window.init_map = (canvas) ->
   maps = {}
   $.each $source.data("allowedMaps"), (i, mapType) ->
     $map = $('#' + mapId + '_' + mapType)
-    maps[mapType] = new CckFormsMap.map(mapType, $map, initialPoint, fields, readOnly: readOnly)
+    maps[mapType] = CckFormsMap.map(mapType, $map, initialPoint, fields, readOnly: readOnly)
 
   $canvas.data('maps', maps)
 
