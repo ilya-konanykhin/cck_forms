@@ -187,7 +187,7 @@ class CckForms::ParameterTypeClass::Map
     switchers = []
     switchers << %Q|<div class="#{group_class} cck-map-switchers #{'hide' if allowed_maps.count < 2}" style="margin-top: 5px;">|
     allowed_maps.map do |map|
-      button_class = switcher_classes[map].presence || 'btn btn-secondary'
+      button_class = switcher_classes[map].presence || 'btn btn-default btn-secondary'
       button_class << ' active' if selected_map_type == map
       switchers << %Q|<a class="#{button_class}" href="#" data-map-type="#{map}">#{map_names[map]}</a>|
     end
