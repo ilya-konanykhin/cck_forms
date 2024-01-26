@@ -53,7 +53,7 @@ class CckForms::ParameterTypeClass::WorkHours
     met_days.reject! { |_, value| value }
 
     met_days.keys.each do |day_name|
-      form_builder.fields_for(:value, index: day_name) { |day_builder| result << CckForms::ParameterTypeClass::WorkHours::WorkHoursDay.new(day: day_name, open_24_hours: true).build_form(day_builder) }
+      form_builder.fields_for(:value, index: day_name) { |day_builder| result << CckForms::ParameterTypeClass::WorkHours::WorkHoursDay.new(day: day_name, open_24_hours: false).build_form(day_builder) }
     end
 
     form_builder.fields_for(:template) do |day_builder|
