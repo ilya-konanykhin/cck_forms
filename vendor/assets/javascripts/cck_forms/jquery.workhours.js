@@ -166,10 +166,12 @@ $(function() {
      * days are grouped by the same "work value" (checkboxes & open/close time):
      *
      *   > [^] Mon   [^] Tue   [^] Wed   [^] Thu   [^] Fri   [_] Sat   [_] Sun
-     *   > from [09]:[00] till [20]:[00]   [_] open 24 hours   [_] open until last client
+     *   > from [09]:[00] till [20]:[00]
+     *   > [_] open 24 hours   [_] open until last client
      *
      *   > [_] Mon   [_] Tue   [_] Wed   [_] Thu   [_] Fri   [^] Sat   [^] Sun
-     *   > from [10]:[00] till [__]:[__]   [_] open 24 hours    [^] open until last client
+     *   > from [10]:[00] till [__]:[__]
+     *   > [_] open 24 hours    [^] open until last client
      *
      *   [ Add days ]
      *
@@ -200,7 +202,7 @@ $(function() {
                 $widget.createGroup([], []);
             });
 
-            this._lastP = $('<p></p>').appendTo($form).append($addGroupLink);
+            this._lastP = $('<p class="form_work_hours_add_days"></p>').appendTo($form).append($addGroupLink);
 
             this._$template = $form.find(".form_work_hours_day_template");
 
@@ -239,7 +241,7 @@ $(function() {
             var newHtml = this._$template[0].outerHTML.replace(/((?:id|name)="[^"]*)template([^"]*")/g, "$1" + this.newGroupId() + "$2");
             var $newGroup = $(newHtml);
 
-            // mark checkboxes
+            // mark day checkboxes
             for(var i = 0, ic = days.length; i < ic; ++ i) {
                 $newGroup
                   .find("input[name$=\"[days]\"][value=" + days[i] + "]")
@@ -249,7 +251,7 @@ $(function() {
             }
 
             // hide checkboxes, link-o-buttons will be in their place
-            $newGroup.find("input[name$=\"[days]\"]").hide();
+            $newGroup.find("input[type=checkbox]").hide();
             $newGroup.find(".nav-pills").on("click", "a", function(event) {
                 // skip events originated at checkbox inside this link
                 if(event.target == this) {
@@ -266,6 +268,12 @@ $(function() {
 
             // make HTML & instantiate widget workhoursday
             $newGroup.workhoursday().workhoursday("value", value).insertBefore(this._lastP).show();
+
+            // highlight checked checkboxes
+            $newGroup
+                .find("input[name$=\"[open_24_hours]\"]:checked, input[name$=\"[open_until_last_client]\"]:checked")
+                .closest(".nav-link").addClass("active") // Bootstrap 4
+                .closest(".nav-item").addClass("active");  // Bootstrap 3
         },
 
         /**
@@ -330,23 +338,39 @@ $(function() {
                         // open 24 hours? nullify open/close time
                         case "open_24_hours":
                             $group.workhoursday("openTime", {hours: '', minutes: ''}).workhoursday("closeTime", {hours: '', minutes: ''});
+
+                            input.parentNode.className += " active"; // Bootstrap 4
+                            input.parentNode.parentNode.className += " active"; // Bootstrap 3
                         break;
 
                         // open until last client? nullify close time
                         case "open_until_last_client":
                             $group.workhoursday("closeTime", {hours: '', minutes: ''});
+
+                            input.parentNode.className += " active"; // Bootstrap 4
+                            input.parentNode.parentNode.className += " active"; // Bootstrap 3
                         break;
 
                         // close time set? uncheck "open until last" checkbox
                         case "close_time_hours":
                         case "close_time_minutes":
                             $group.workhoursday("openUntilLastClient", false);
+
+                            $group
+                                .find("input[name$=\"[open_until_last_client]\"]")
+                                .closest(".nav-link").removeClass("active") // Bootstrap 4
+                                .closest(".nav-item").removeClass("active");  // Bootstrap 3
                         // break skipped on purpose!
 
                         // any time set? uncheck "open 24h" checkbox
                         case "open_time_hours":
                         case "open_time_minutes":
                             $group.workhoursday("open24Hours", false);
+
+                            $group
+                                .find("input[name$=\"[open_24_hours]\"]")
+                                .closest(".nav-link").removeClass("active") // Bootstrap 4
+                                .closest(".nav-item").removeClass("active");  // Bootstrap 3
                         break;
                     }
 
@@ -355,6 +379,13 @@ $(function() {
                     if((fieldName == "open_time_hours" || fieldName == "close_time_hours") && !$group.workhoursday(camelCasedTime)) {
                         $group.workhoursday(camelCasedTime, {minutes: 0})
                     }
+
+                // input unchecked
+                } else if(inputNodeName == "input" && !input.checked && (fieldName == "open_24_hours" || fieldName == "open_until_last_client")) {
+
+                    // remove active class
+                    input.parentNode.className = input.parentNode.className.replace(/(^|\s)active($|\s)/, "$1"); // Bootstrap 4
+                    input.parentNode.parentNode.className = input.parentNode.parentNode.className.replace(/(^|\s)active($|\s)/, "$1"); // Bootstrap 3
 
                 // not input
                 } else {

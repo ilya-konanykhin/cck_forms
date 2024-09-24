@@ -226,9 +226,11 @@ class CckForms::ParameterTypeClass::WorkHours
 
       open_until_last_client_html = unless options[:hide_open_until_last_client]
                                       <<HTML
-                    <div class="checkbox">
-                      <label class="form_work_hours_option">#{form_builder.check_box :open_until_last_client} <nobr>#{I18n.t 'cck_forms.work_hours.until_last_client'}</nobr></label>
-                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link">
+                        #{form_builder.check_box :open_until_last_client} #{I18n.t 'cck_forms.work_hours.until_last_client'}
+                      </a>
+                    </li>
 HTML
                                     end
 
@@ -237,21 +239,25 @@ HTML
           <div class="form_work_hours_time">
             #{header}
           </div>
+          <div class="form_work_hours_time form-inline">
+            <div class="form_work_hours_selects">
+              <span class="form_work_hours_select">
+                <span>#{I18n.t 'cck_forms.work_hours.time_from'}</span> #{open_time_form}
+              </span>
+              <span class="form_work_hours_select">
+                <span>#{I18n.t 'cck_forms.work_hours.time_till'}</span> #{close_time_form}
+              </span>
+            </div>
+          </div>
           <div class="form_work_hours_time">
-            <table width="100%">
-              <tr>
-                <td width="60%" class="form-inline">
-                  #{I18n.t 'cck_forms.work_hours.time_from'} #{open_time_form}
-                  #{I18n.t 'cck_forms.work_hours.time_till'} #{close_time_form}
-                </td>
-                <td width="40%">
-                    <div class="checkbox">
-                      <label class="form_work_hours_option">#{form_builder.check_box :open_24_hours} #{I18n.t 'cck_forms.work_hours.24h'}</label>
-                    </div>
-                    #{open_until_last_client_html}
-                </td>
-              </tr>
-            </table>
+            <ul class="nav nav-pills">
+              <li class="nav-item">
+                <a class="nav-link">
+                  #{form_builder.check_box :open_24_hours} #{I18n.t 'cck_forms.work_hours.24h'}
+                </a>
+              </li>
+              #{open_until_last_client_html}
+            </ul>
           </div>
         </div>
 HTML
