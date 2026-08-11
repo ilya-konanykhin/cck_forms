@@ -82,6 +82,7 @@ module CckForms::ParameterTypeClass::Base
       when self then object.mongoize
       # TODO: why only these classes? does any scalar fit?
       when Hash, Array, String then new(value: object).mongoize
+      when ActionController::Parameters then new(value: object.to_unsafe_h).mongoize
       else object
       end
     end
